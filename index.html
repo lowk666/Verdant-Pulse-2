@@ -1,3 +1,4 @@
+cat > /mnt/user-data/outputs/verdant-pulse.html << 'ENDOFFILE'
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -5,1094 +6,1150 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Verdant Pulse</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Serif+Display:ital@0;1&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Serif+Display&display=swap');
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --g0:#020c04;--g1:#071a09;--g2:#0d2e10;--g3:#165c1a;
-  --g4:#22a02a;--g5:#2ecc38;--g6:#5eff68;--g7:#a8ffad;
-  --neon:#00ff44;--dark:#030f05;
-  --heaven0:#f0f8ff;--heaven1:#e8f4fd;--heaven2:#d4ecf7;--heaven3:#a8d8f0;
-  --hgold:#ffd700;--hgold2:#fff4a0;--hwhite:#ffffff;
-  --mono:'Space Mono',monospace;--serif:'DM Serif Display',serif;
+  --g0:#020c04;--g1:#071a09;--g2:#0d2e10;--g3:#165c1a;--g4:#22a02a;--g5:#2ecc38;--g6:#5eff68;
+  --neon:#00ff44;--mono:'Space Mono',monospace;--serif:'DM Serif Display',serif;
+  --ac:#22a02a;--at:#5eff68;--ab:#020c04;
 }
-html,body{width:100%;height:100%;background:var(--g0);color:var(--g6);font-family:var(--mono);overflow:hidden;user-select:none;transition:background 3s ease,color 3s ease;}
-body.heaven{background:#c8eeff;color:#1a4a6b;}
+html,body{width:100%;height:100%;background:var(--ab);color:var(--at);font-family:var(--mono);overflow:hidden;user-select:none;transition:background 5s,color 5s;}
 
-/* LOADING */
-#loading{position:fixed;inset:0;background:var(--g0);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;transition:opacity 1.2s ease;}
-#loading.fade-out{opacity:0;pointer-events:none}
-.load-title{font-family:var(--serif);font-size:clamp(1.4rem,3vw,2.2rem);color:var(--g4);letter-spacing:.18em;margin-bottom:3.5rem;opacity:.7;}
-.load-ring-wrap{position:relative;width:130px;height:130px;display:flex;align-items:center;justify-content:center;}
-.load-ring{position:absolute;inset:0;border-radius:50%;border:1.5px solid var(--g3);animation:loadPulse 3.2s ease-in-out infinite;}
-.load-ring:nth-child(2){animation-delay:.6s;border-color:var(--g2);transform:scale(.82)}
-.load-ring:nth-child(3){animation-delay:1.2s;border-color:var(--g2);transform:scale(.65)}
-.load-core{width:58px;height:58px;border-radius:50%;background:radial-gradient(circle at 38% 36%,var(--g4) 0%,var(--g2) 70%,transparent 100%);animation:coreBreath 3.2s ease-in-out infinite;box-shadow:0 0 28px var(--g3),0 0 8px var(--g4);}
-@keyframes loadPulse{0%,100%{opacity:.18;transform:scale(1)}50%{opacity:.55;transform:scale(1.06)}}
-@keyframes coreBreath{0%,100%{transform:scale(1)}50%{transform:scale(1.14)}}
-.load-bar-wrap{margin-top:3.2rem;width:180px;height:2px;background:var(--g1);border-radius:2px;overflow:hidden;}
-.load-bar{height:100%;width:0%;background:var(--g4);box-shadow:0 0 8px var(--g4);}
-.load-pct{margin-top:.9rem;font-size:.65rem;letter-spacing:.2em;color:var(--g3);}
+/* ── THEMES ── */
+body.t-heaven{--ab:#c8eeff;--at:#1a4a6b;--ac:#1a6b8a;}
+body.t-wasteland{--ab:#1a1208;--at:#c8a876;--ac:#8b6914;}
+body.t-inferno{--ab:#0d0000;--at:#ff4400;--ac:#cc2200;}
+body.t-void{--ab:#000008;--at:#8888ff;--ac:#4444cc;}
+body.t-crystal{--ab:#001a1a;--at:#00ffee;--ac:#00ccbb;}
+body.t-aurora{--ab:#000d1a;--at:#ff88ff;--ac:#cc44cc;}
+body.t-solar{--ab:#1a0d00;--at:#ffcc44;--ac:#ff8800;}
+body.t-deep{--ab:#000510;--at:#4488ff;--ac:#2255cc;}
 
-/* BG CANVAS */
-#bg-canvas{position:fixed;inset:0;pointer-events:none;z-index:0;transition:opacity 2s;}
+/* ── UPDATE POPUP ── */
+#update-popup{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.88);}
+.upop{border:1px solid var(--g3);background:#030f05;padding:1.8rem 2.2rem;max-width:460px;width:92%;border-radius:4px;position:relative;max-height:88vh;overflow-y:auto;}
+.upop-close{position:absolute;top:.6rem;right:.8rem;font-size:1rem;cursor:pointer;color:var(--g3);background:none;border:none;font-family:var(--mono);line-height:1;transition:color .18s;}
+.upop-close:hover{color:var(--g6);}
+.upop-title{font-family:var(--serif);font-size:1.15rem;color:var(--g4);letter-spacing:.1em;margin-bottom:.3rem;}
+.upop-ver{font-size:.48rem;letter-spacing:.22em;color:var(--g3);margin-bottom:1.2rem;}
+.upop-section{font-size:.52rem;font-weight:700;letter-spacing:.18em;color:var(--g4);margin:.9rem 0 .4rem;text-transform:uppercase;}
+.upop-item{display:flex;gap:.5rem;margin-bottom:.6rem;}
+.upop-bul{color:var(--g4);flex-shrink:0;font-size:.75rem;}
+.upop-txt{font-size:.56rem;color:var(--g5);line-height:1.6;letter-spacing:.04em;}
+.upop-warn{margin-top:1rem;padding:.55rem .75rem;border:1px solid #ff3300;border-radius:3px;background:rgba(255,51,0,.06);}
+.upop-warn-t{font-size:.56rem;font-weight:700;color:#ff4400;letter-spacing:.1em;margin-bottom:.28rem;}
+.upop-warn-b{font-size:.52rem;color:#cc3300;line-height:1.55;}
+.upop-ok{display:block;width:100%;margin-top:1.2rem;padding:.48rem;border:1px solid var(--g4);background:transparent;color:var(--g5);font-family:var(--mono);font-size:.58rem;letter-spacing:.15em;cursor:pointer;border-radius:2px;transition:all .18s;}
+.upop-ok:hover{background:rgba(34,160,42,.12);color:var(--g6);}
 
-/* HEAVEN OVERLAY */
-#heaven-overlay{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:0;transition:opacity 4s ease;background:linear-gradient(180deg,#e8f6ff 0%,#c4e8ff 40%,#f0faff 100%);}
-#heaven-canvas{position:fixed;inset:0;pointer-events:none;z-index:1;}
+/* ── LOADING ── */
+#loading{position:fixed;inset:0;background:#020c04;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:998;transition:opacity 1.2s;}
+#loading.fo{opacity:0;pointer-events:none;}
+.lt{font-family:var(--serif);font-size:clamp(1.3rem,3vw,2rem);color:var(--g4);letter-spacing:.18em;margin-bottom:3rem;opacity:.7;}
+.lrw{position:relative;width:120px;height:120px;display:flex;align-items:center;justify-content:center;}
+.lr{position:absolute;inset:0;border-radius:50%;border:1.5px solid var(--g3);animation:lpulse 3s ease-in-out infinite;}
+.lr:nth-child(2){animation-delay:.5s;transform:scale(.82);}
+.lr:nth-child(3){animation-delay:1s;transform:scale(.65);}
+.lcore{width:52px;height:52px;border-radius:50%;background:radial-gradient(circle at 38% 36%,var(--g4) 0%,var(--g2) 70%,transparent 100%);animation:lbreath 3s ease-in-out infinite;box-shadow:0 0 25px var(--g3),0 0 8px var(--g4);}
+@keyframes lpulse{0%,100%{opacity:.15;transform:scale(1)}50%{opacity:.5;transform:scale(1.06)}}
+@keyframes lbreath{0%,100%{transform:scale(1)}50%{transform:scale(1.13)}}
+.lbw{margin-top:2.8rem;width:160px;height:2px;background:var(--g1);border-radius:2px;overflow:hidden;}
+.lb{height:100%;width:0;background:var(--g4);box-shadow:0 0 8px var(--g4);}
+.lpct{margin-top:.8rem;font-size:.6rem;letter-spacing:.2em;color:var(--g3);}
 
-/* GAME LAYOUT */
-#game{position:fixed;inset:0;display:grid;grid-template-columns:1fr auto;grid-template-rows:auto 1fr;grid-template-areas:"header header""stage shop";opacity:0;transition:opacity 1s ease .3s;z-index:2;}
-#game.visible{opacity:1}
+/* ── ANTICHEAT ── */
+#ac-warn{position:fixed;inset:0;z-index:7777;display:flex;align-items:center;justify-content:center;background:rgba(150,0,0,.2);opacity:0;pointer-events:none;transition:opacity .3s;}
+#ac-warn.show{opacity:1;pointer-events:all;}
+.ac-box{border:2px solid #ff2200;background:#0a0000;padding:1.4rem 1.8rem;border-radius:4px;text-align:center;max-width:340px;}
+.ac-t{font-size:.95rem;font-weight:700;color:#ff2200;letter-spacing:.1em;margin-bottom:.4rem;}
+.ac-s{font-size:.54rem;color:#cc2200;line-height:1.6;letter-spacing:.06em;}
+.ac-n{font-size:1.6rem;font-weight:700;color:#ff4400;margin-top:.7rem;}
+.ac-r{font-size:.48rem;color:#882200;margin-top:.5rem;letter-spacing:.08em;}
 
-/* HEADER */
-#header{grid-area:header;padding:.55rem 1.2rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--g2);background:rgba(2,12,4,.9);backdrop-filter:blur(6px);gap:.8rem;transition:background 3s,border-color 3s;}
-body.heaven #header{background:rgba(240,248,255,.92);border-bottom-color:#a8d8f0;}
-.hdr-title{font-family:var(--serif);font-size:.95rem;letter-spacing:.12em;color:var(--g4);opacity:.8;white-space:nowrap;transition:color 3s;}
-body.heaven .hdr-title{color:#1a6b8a;}
-.hdr-center{display:flex;align-items:center;gap:1rem;flex:1;justify-content:center;flex-wrap:wrap;}
-.hdr-stat{text-align:center;}
-.hdr-stat-val{font-size:1rem;font-weight:700;color:var(--g6);letter-spacing:.04em;line-height:1;transition:color 3s;}
-body.heaven .hdr-stat-val{color:#1a4a6b;}
-.hdr-stat-lbl{font-size:.44rem;letter-spacing:.2em;color:var(--g3);text-transform:uppercase;margin-top:.1rem;transition:color 3s;}
-body.heaven .hdr-stat-lbl{color:#5a8fa8;}
-.hdr-div{width:1px;height:24px;background:var(--g2);transition:background 3s;}
-body.heaven .hdr-div{background:#a8d8f0;}
-.hdr-stage{font-size:.48rem;letter-spacing:.2em;color:var(--g3);text-align:center;padding:.13rem .5rem;border:1px solid var(--g2);border-radius:2px;line-height:1.6;white-space:nowrap;transition:all 3s;}
-.hdr-stage span{display:block;color:var(--g4);font-size:.64rem;letter-spacing:.1em;transition:color 3s;}
-body.heaven .hdr-stage{border-color:#a8d8f0;color:#5a8fa8;}
-body.heaven .hdr-stage span{color:#1a6b8a;}
+/* ── TRANSITION ── */
+#tr-scr{position:fixed;inset:0;z-index:8888;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 1.5s;}
+#tr-scr.show{opacity:1;pointer-events:all;}
+.tr-t{font-family:var(--serif);font-size:clamp(1.8rem,6vw,4rem);letter-spacing:.08em;text-align:center;margin-bottom:.7rem;color:#fff;}
+.tr-s{font-size:.6rem;letter-spacing:.18em;text-align:center;opacity:.7;color:#ccc;}
 
-/* STAGE AREA */
-#stage{grid-area:stage;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;overflow:hidden;}
+/* ── CANVASES ── */
+#bg-canvas{position:fixed;inset:0;pointer-events:none;z-index:0;}
+.theme-canvas{position:fixed;inset:0;pointer-events:none;z-index:1;opacity:0;transition:opacity 4s;}
+.theme-canvas.show{opacity:1;}
 
-/* STATS STRIP */
-#stats-strip{display:flex;gap:1.2rem;margin-top:1rem;z-index:3;}
-.ss-item{text-align:center;}
-.ss-val{font-size:.68rem;font-weight:700;color:var(--g5);letter-spacing:.04em;transition:color 3s;}
-body.heaven .ss-val{color:#1a6b8a;}
-.ss-lbl{font-size:.43rem;letter-spacing:.16em;color:var(--g2);text-transform:uppercase;margin-top:.1rem;transition:color 3s;}
-body.heaven .ss-lbl{color:#5a8fa8;}
+/* ── GAME LAYOUT ── */
+#game{position:fixed;inset:0;display:grid;grid-template-columns:1fr auto;grid-template-rows:auto 1fr;grid-template-areas:"hdr hdr""stg shp";opacity:0;transition:opacity 1s .3s;z-index:2;}
+#game.vis{opacity:1;}
 
-/* ORB */
+/* ── HEADER ── */
+#hdr{grid-area:hdr;padding:.45rem 1rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--g2);background:rgba(2,12,4,.92);backdrop-filter:blur(6px);gap:.5rem;transition:background 5s,border-color 5s;}
+body.t-heaven #hdr{background:rgba(232,248,255,.93);border-color:#a8d8f0;}
+body.t-wasteland #hdr{background:rgba(22,14,4,.93);border-color:#4a3210;}
+body.t-inferno #hdr{background:rgba(12,0,0,.93);border-color:#550000;}
+body.t-void #hdr{background:rgba(0,0,10,.93);border-color:#333388;}
+body.t-crystal #hdr{background:rgba(0,20,20,.93);border-color:#006655;}
+body.t-aurora #hdr{background:rgba(0,8,20,.93);border-color:#663366;}
+body.t-solar #hdr{background:rgba(20,8,0,.93);border-color:#664400;}
+body.t-deep #hdr{background:rgba(0,4,14,.93);border-color:#223366;}
+.hdr-title{font-family:var(--serif);font-size:.88rem;letter-spacing:.12em;color:var(--ac);opacity:.85;white-space:nowrap;}
+.hdr-mid{display:flex;align-items:center;gap:.7rem;flex:1;justify-content:center;flex-wrap:wrap;}
+.hstat{text-align:center;}
+.hstat-v{font-size:.88rem;font-weight:700;color:var(--at);letter-spacing:.04em;line-height:1;}
+.hstat-l{font-size:.4rem;letter-spacing:.18em;color:var(--ac);text-transform:uppercase;margin-top:.08rem;opacity:.75;}
+.hdiv{width:1px;height:20px;background:var(--g2);transition:background 5s;}
+body.t-heaven .hdiv{background:#a8d8f0;}
+body.t-wasteland .hdiv{background:#4a3210;}
+body.t-inferno .hdiv{background:#550000;}
+body.t-void .hdiv{background:#333388;}
+body.t-crystal .hdiv{background:#006655;}
+body.t-aurora .hdiv{background:#663366;}
+body.t-solar .hdiv{background:#664400;}
+body.t-deep .hdiv{background:#223366;}
+.hdr-right{display:flex;align-items:center;gap:.35rem;flex-wrap:wrap;justify-content:flex-end;}
+.hbadge{font-size:.42rem;letter-spacing:.12em;padding:.1rem .36rem;border-radius:2px;border:1px solid var(--ac);color:var(--ac);background:rgba(0,0,0,.15);white-space:nowrap;}
+.stage-badge{font-size:.44rem;letter-spacing:.14em;color:var(--ac);padding:.1rem .4rem;border:1px solid var(--g2);border-radius:2px;line-height:1.55;text-align:center;transition:all 5s;}
+.stage-badge span{display:block;font-size:.6rem;letter-spacing:.1em;}
+
+/* ── STAGE AREA ── */
+#stg{grid-area:stg;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;overflow:hidden;}
+#ms-row{position:absolute;top:.45rem;left:50%;transform:translateX(-50%);display:flex;gap:.28rem;z-index:5;pointer-events:none;flex-wrap:wrap;max-width:80%;}
+.ms-pip{width:5px;height:5px;border-radius:50%;border:1px solid var(--g3);transition:all .4s;}
+.ms-pip.done{background:var(--ac);border-color:var(--ac);}
+#stats-strip{display:flex;gap:.85rem;margin-top:.85rem;z-index:3;flex-wrap:wrap;justify-content:center;}
+.ss{text-align:center;}
+.ss-v{font-size:.62rem;font-weight:700;color:var(--ac);letter-spacing:.04em;}
+.ss-l{font-size:.39rem;letter-spacing:.14em;color:var(--g3);text-transform:uppercase;margin-top:.07rem;}
+
+/* ── ORB ── */
 #orb-wrap{position:relative;cursor:pointer;z-index:3;touch-action:none;-webkit-tap-highlight-color:transparent;}
-.orb-aura{position:absolute;border-radius:50%;border:1px solid var(--g3);opacity:0;pointer-events:none;animation:auraIdle 5s ease-in-out infinite;transition:border-color 3s;}
-.orb-aura:nth-child(1){width:calc(100% + 50px);height:calc(100% + 50px);top:-25px;left:-25px;animation-delay:0s}
-.orb-aura:nth-child(2){width:calc(100% + 95px);height:calc(100% + 95px);top:-47px;left:-47px;animation-delay:1.6s}
-.orb-aura:nth-child(3){width:calc(100% + 150px);height:calc(100% + 150px);top:-75px;left:-75px;animation-delay:3.1s}
-@keyframes auraIdle{0%,100%{opacity:0;transform:scale(.96)}40%{opacity:.22;transform:scale(1)}}
-body.heaven .orb-aura{border-color:rgba(255,215,0,.4);}
+.oaura{position:absolute;border-radius:50%;border:1px solid var(--g3);opacity:0;pointer-events:none;animation:aura 5s ease-in-out infinite;}
+.oaura:nth-child(1){width:calc(100% + 50px);height:calc(100% + 50px);top:-25px;left:-25px;}
+.oaura:nth-child(2){width:calc(100% + 94px);height:calc(100% + 94px);top:-47px;left:-47px;animation-delay:1.6s}
+.oaura:nth-child(3){width:calc(100% + 148px);height:calc(100% + 148px);top:-74px;left:-74px;animation-delay:3.1s}
+@keyframes aura{0%,100%{opacity:0;transform:scale(.96)}40%{opacity:.2;transform:scale(1)}}
+#orb{border-radius:50%;background:radial-gradient(circle at 38% 34%,var(--g6) 0%,var(--g4) 28%,var(--g2) 72%,transparent 100%);box-shadow:0 0 38px var(--g3),0 0 14px var(--g4);position:relative;z-index:1;transition:background 5s,box-shadow 5s;}
+body.t-heaven #orb{background:radial-gradient(circle at 38% 34%,#fff8d0 0%,#ffd700 30%,#a8d8f0 72%,transparent 100%);box-shadow:0 0 55px rgba(255,215,0,.5),0 0 28px rgba(255,255,255,.5);}
+body.t-wasteland #orb{background:radial-gradient(circle at 38% 34%,#e8c87a 0%,#8b6914 30%,#3d2a06 72%,transparent 100%);box-shadow:0 0 38px rgba(139,105,20,.4);}
+body.t-inferno #orb{background:radial-gradient(circle at 38% 34%,#ffaa44 0%,#cc2200 30%,#330000 72%,transparent 100%);box-shadow:0 0 55px rgba(204,34,0,.6),0 0 28px rgba(255,68,0,.5);}
+body.t-void #orb{background:radial-gradient(circle at 38% 34%,#aaaaff 0%,#4444cc 30%,#080824 72%,transparent 100%);box-shadow:0 0 55px rgba(68,68,204,.5);}
+body.t-crystal #orb{background:radial-gradient(circle at 38% 34%,#aaffee 0%,#00ccbb 30%,#003330 72%,transparent 100%);box-shadow:0 0 55px rgba(0,204,187,.5);}
+body.t-aurora #orb{background:radial-gradient(circle at 38% 34%,#ffaaff 0%,#cc44cc 30%,#220022 72%,transparent 100%);box-shadow:0 0 55px rgba(204,68,204,.5);}
+body.t-solar #orb{background:radial-gradient(circle at 38% 34%,#ffee88 0%,#ff8800 30%,#330d00 72%,transparent 100%);box-shadow:0 0 55px rgba(255,136,0,.5);}
+body.t-deep #orb{background:radial-gradient(circle at 38% 34%,#88aaff 0%,#2255cc 30%,#000520 72%,transparent 100%);box-shadow:0 0 55px rgba(34,85,204,.5);}
+#orb.clicked{animation:oclk .22s ease-out forwards;}
+@keyframes oclk{0%{transform:scale(1)}30%{transform:scale(1.08)}70%{transform:scale(.97)}100%{transform:scale(1)}}
+#orb.oc-a{animation:ocglow 1s ease-in-out infinite;}
+@keyframes ocglow{0%,100%{filter:brightness(1.2)}50%{filter:brightness(1.7)}}
+#orb.fz-a{animation:fzpulse .32s ease-in-out infinite;}
+@keyframes fzpulse{0%,100%{filter:brightness(1.3)}50%{filter:brightness(2)}}
+#fill-ring{position:absolute;inset:0;border-radius:50%;background:conic-gradient(var(--ac) calc(var(--fill)*1%),transparent calc(var(--fill)*1%));opacity:.35;pointer-events:none;--fill:0;transition:background 5s;}
+#combo-d{position:absolute;top:-2.2rem;left:50%;transform:translateX(-50%);font-size:.56rem;letter-spacing:.1em;color:var(--neon);opacity:0;white-space:nowrap;transition:opacity .3s;}
+#combo-d.show{opacity:1;}
 
-#orb{border-radius:50%;background:radial-gradient(circle at 38% 34%,var(--g6) 0%,var(--g4) 28%,var(--g2) 72%,transparent 100%);box-shadow:0 0 40px var(--g3),0 0 16px var(--g4),inset 0 0 22px rgba(0,255,68,.08);position:relative;z-index:1;transition:background 3s,box-shadow 3s;}
-body.heaven #orb{background:radial-gradient(circle at 38% 34%,#fff8d0 0%,#ffd700 28%,#a8d8f0 72%,transparent 100%);box-shadow:0 0 60px rgba(255,215,0,.5),0 0 30px rgba(255,255,255,.6),inset 0 0 30px rgba(255,215,0,.2);}
-#orb.clicked{animation:orbClick .22s ease-out forwards;}
-@keyframes orbClick{0%{transform:scale(1)}30%{transform:scale(1.08)}70%{transform:scale(.97)}100%{transform:scale(1)}}
-#orb.overcharge-active{box-shadow:0 0 80px var(--g4),0 0 40px var(--neon),inset 0 0 30px rgba(0,255,68,.2);}
-#orb.frenzy-active{animation:frenzyPulse .35s ease-in-out infinite;}
-@keyframes frenzyPulse{0%,100%{filter:brightness(1.4)}50%{filter:brightness(1.8) saturate(1.4)}}
-#orb.heaven-pulse{animation:heavenPulse 2s ease-in-out infinite;}
-@keyframes heavenPulse{0%,100%{filter:brightness(1) drop-shadow(0 0 20px gold)}50%{filter:brightness(1.3) drop-shadow(0 0 50px white)}}
+/* ── PARTICLES ── */
+.cp{position:fixed;pointer-events:none;border-radius:50%;z-index:50;animation:cpfly var(--dur) ease-out forwards;}
+@keyframes cpfly{0%{opacity:.85;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--tx),var(--ty)) scale(.15)}}
+.cn{position:fixed;pointer-events:none;font-size:.66rem;font-weight:700;z-index:51;animation:cnfloat .95s ease-out forwards;}
+@keyframes cnfloat{0%{opacity:.9;transform:translateY(0)}100%{opacity:0;transform:translateY(-50px)}}
+.pring{position:fixed;border-radius:50%;pointer-events:none;z-index:40;animation:prburst .85s ease-out forwards;}
+@keyframes prburst{0%{opacity:.7;transform:scale(.5)}100%{opacity:0;transform:scale(2.8)}}
 
-#fill-ring{position:absolute;inset:0;border-radius:50%;background:conic-gradient(var(--g4) calc(var(--fill)*1%),transparent calc(var(--fill)*1%));opacity:.35;pointer-events:none;--fill:0;transition:background 3s;}
-body.heaven #fill-ring{background:conic-gradient(gold calc(var(--fill)*1%),transparent calc(var(--fill)*1%));opacity:.5;}
-#combo-display{position:absolute;top:-2.4rem;left:50%;transform:translateX(-50%);font-size:.6rem;letter-spacing:.12em;color:var(--neon);opacity:0;transition:opacity .3s;white-space:nowrap;}
-body.heaven #combo-display{color:var(--hgold);}
-#combo-display.show{opacity:1;}
+/* ── ABILITIES ── */
+#abil-bar{display:flex;gap:.4rem;margin-top:.9rem;z-index:3;flex-wrap:wrap;justify-content:center;max-width:520px;}
+.abil-btn{padding:.32rem .72rem;border:1px solid var(--g3);background:rgba(7,26,9,.75);color:var(--ac);font-family:var(--mono);font-size:.5rem;letter-spacing:.09em;cursor:pointer;border-radius:2px;transition:all .18s;position:relative;overflow:hidden;}
+.abil-btn:hover:not(:disabled){border-color:var(--ac);color:var(--at);}
+.abil-btn:disabled{opacity:.26;cursor:default;}
+.abil-btn.ab-oc{border-color:var(--neon);color:var(--neon);}
+.abil-btn.ab-fz{border-color:#ff6b35;color:#ff6b35;}
+.abil-btn.ab-vd{border-color:#8b5cf6;color:#8b5cf6;}
+.abil-btn.ab-dv{border-color:gold;color:gold;}
+.abil-btn.ab-if{border-color:#ff2200;color:#ff2200;}
+.abil-btn.ab-vc{border-color:#8888ff;color:#8888ff;}
+.abil-btn.ab-cr{border-color:#00ffee;color:#00ffee;}
+.abil-btn.ab-sr{border-color:#ffcc44;color:#ffcc44;}
+.acd{position:absolute;bottom:0;left:0;height:2px;background:currentColor;opacity:.45;}
+#oc-t{font-size:.5rem;letter-spacing:.13em;color:var(--neon);opacity:0;transition:opacity .3s;text-align:center;margin-top:.32rem;}
+#oc-t.show{opacity:1;}
+#eps-d{margin-top:.38rem;font-size:.5rem;letter-spacing:.13em;color:var(--g3);}
 
-/* PARTICLES */
-.click-particle{position:fixed;pointer-events:none;border-radius:50%;background:var(--g5);z-index:50;animation:particleFly var(--dur) ease-out forwards;}
-@keyframes particleFly{0%{opacity:.85;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--tx),var(--ty)) scale(.2)}}
-.heaven-particle{background:radial-gradient(circle,#fff 0%,gold 60%,transparent 100%) !important;}
-.click-number{position:fixed;pointer-events:none;font-size:.7rem;font-weight:700;color:var(--g6);z-index:51;letter-spacing:.06em;animation:numFloat .9s ease-out forwards;}
-@keyframes numFloat{0%{opacity:.9;transform:translateY(0)}100%{opacity:0;transform:translateY(-50px)}}
-.pulse-ring{position:fixed;border-radius:50%;border:2px solid var(--g4);pointer-events:none;z-index:40;animation:ringBurst .85s ease-out forwards;}
-@keyframes ringBurst{0%{opacity:.7;transform:scale(.5)}100%{opacity:0;transform:scale(2.8)}}
-.heaven-ring{border-color:gold !important;box-shadow:0 0 10px gold;}
+/* ── PROGRESS ── */
+#prog-wrap{position:absolute;bottom:.8rem;left:50%;transform:translateX(-50%);width:clamp(160px,44vw,420px);z-index:3;}
+.prog-lbl{font-size:.42rem;letter-spacing:.16em;color:var(--g2);margin-bottom:.22rem;line-height:1.4;}
+.prog-track{height:2px;background:var(--g1);border-radius:2px;overflow:hidden;}
+.prog-fill{height:100%;background:var(--ac);border-radius:2px;box-shadow:0 0 7px var(--ac);transition:width .5s ease,background 5s,box-shadow 5s;}
 
-/* ABILITY BAR */
-#ability-bar{display:flex;gap:.5rem;margin-top:1.2rem;z-index:3;flex-wrap:wrap;justify-content:center;max-width:480px;}
-.ability-btn{padding:.38rem .85rem;border:1px solid var(--g3);background:rgba(7,26,9,.75);color:var(--g4);font-family:var(--mono);font-size:.55rem;letter-spacing:.1em;cursor:pointer;border-radius:2px;transition:all .18s;position:relative;overflow:hidden;}
-.ability-btn:hover:not(:disabled){border-color:var(--g4);background:rgba(13,46,16,.85);color:var(--g6);}
-.ability-btn:disabled{opacity:.3;cursor:default;}
-.ability-btn.oc-btn{border-color:var(--neon);color:var(--neon);}
-.ability-btn.fz-btn{border-color:#ff6b35;color:#ff6b35;}
-.ability-btn.vd-btn{border-color:#8b5cf6;color:#8b5cf6;}
-.ability-btn.hv-btn{border-color:gold;color:gold;}
-.ability-cd{position:absolute;bottom:0;left:0;height:2px;background:currentColor;opacity:.5;}
+/* ── SHOP ── */
+#shp{grid-area:shp;width:clamp(225px,25vw,310px);border-left:1px solid var(--g2);background:rgba(2,10,3,.94);display:flex;flex-direction:column;overflow:hidden;transition:background 5s,border-color 5s;}
+body.t-heaven #shp{background:rgba(228,244,252,.95);border-color:#a8d8f0;}
+body.t-wasteland #shp{background:rgba(18,12,3,.95);border-color:#4a3210;}
+body.t-inferno #shp{background:rgba(10,0,0,.95);border-color:#550000;}
+body.t-void #shp{background:rgba(0,0,10,.95);border-color:#333388;}
+body.t-crystal #shp{background:rgba(0,18,18,.95);border-color:#006655;}
+body.t-aurora #shp{background:rgba(0,6,16,.95);border-color:#663366;}
+body.t-solar #shp{background:rgba(18,6,0,.95);border-color:#664400;}
+body.t-deep #shp{background:rgba(0,3,12,.95);border-color:#223366;}
+.shp-hdr{padding:.45rem .8rem .32rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(22,92,26,.3);}
+.shp-hdr-t{font-size:.46rem;letter-spacing:.22em;color:var(--g2);text-transform:uppercase;}
+.shp-tabs{display:flex;gap:.22rem;}
+.stab{font-size:.42rem;letter-spacing:.1em;padding:.13rem .3rem;border:1px solid var(--g2);border-radius:2px;cursor:pointer;color:var(--g3);background:transparent;font-family:var(--mono);transition:all .18s;}
+.stab.act{border-color:var(--ac);color:var(--ac);}
+#shp-list{flex:1;overflow-y:auto;padding:.32rem .38rem .6rem;scrollbar-width:thin;scrollbar-color:var(--g2) transparent;}
+.upg{border:1px solid var(--g2);border-radius:3px;padding:.44rem .52rem;margin-bottom:.28rem;cursor:pointer;transition:all .18s;background:rgba(7,26,9,.5);position:relative;overflow:hidden;}
+.upg::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(46,204,56,.05),transparent);transform:translateX(-100%);transition:transform .35s;}
+.upg:hover::before{transform:translateX(100%)}
+.upg.aff:hover{border-color:var(--ac);}
+.upg.ca{opacity:.32;cursor:default;}
+.upg.lk{opacity:.12;cursor:default;pointer-events:none;}
+.upg.mx{opacity:.38;cursor:default;border-style:dashed;}
+body.t-heaven .upg{background:rgba(255,255,255,.35);border-color:rgba(168,216,240,.4);}
+body.t-wasteland .upg{background:rgba(35,22,4,.5);border-color:rgba(74,50,16,.45);}
+body.t-inferno .upg{background:rgba(28,0,0,.5);border-color:rgba(90,0,0,.45);}
+body.t-void .upg{background:rgba(0,0,20,.5);border-color:rgba(50,50,140,.35);}
+body.t-crystal .upg{background:rgba(0,20,20,.5);border-color:rgba(0,100,90,.35);}
+body.t-aurora .upg{background:rgba(0,8,24,.5);border-color:rgba(90,30,90,.35);}
+body.t-solar .upg{background:rgba(22,8,0,.5);border-color:rgba(100,60,0,.35);}
+body.t-deep .upg{background:rgba(0,5,18,.5);border-color:rgba(20,50,130,.35);}
+.upg-name{font-size:.62rem;font-weight:700;color:var(--at);letter-spacing:.05em;margin-bottom:.1rem;}
+.upg-desc{font-size:.49rem;color:var(--g3);line-height:1.42;margin-bottom:.22rem;}
+.upg-foot{display:flex;align-items:center;justify-content:space-between;}
+.upg-cost{font-size:.56rem;font-weight:700;color:var(--ac);letter-spacing:.07em;}
+.upg-own{font-size:.43rem;color:var(--g2);}
+.utag{display:inline-block;font-size:.38rem;letter-spacing:.11em;padding:.03rem .2rem;border:1px solid var(--g2);border-radius:1px;color:var(--g2);margin-bottom:.18rem;text-transform:uppercase;transition:all 5s;}
+.ms-card{border:1px solid var(--g2);border-radius:3px;padding:.4rem .48rem;margin-bottom:.26rem;background:rgba(7,26,9,.4);display:flex;align-items:center;gap:.45rem;transition:all 5s;}
+.ms-card.done{border-color:var(--g3);}
+.ms-ico{font-size:.85rem;flex-shrink:0;}
+.ms-inf{flex:1;}
+.ms-name{font-size:.56rem;font-weight:700;color:var(--ac);letter-spacing:.05em;}
+.ms-desc{font-size:.44rem;color:var(--g3);margin-top:.06rem;}
+.ms-rew{font-size:.44rem;color:var(--at);margin-top:.06rem;}
+.ms-chk{font-size:.75rem;color:var(--ac);}
 
-#oc-timer{font-size:.56rem;letter-spacing:.16em;color:var(--neon);opacity:0;transition:opacity .3s;text-align:center;margin-top:.38rem;}
-body.heaven #oc-timer{color:gold;}
-#oc-timer.show{opacity:1;}
-#eps-display{margin-top:.45rem;font-size:.55rem;letter-spacing:.16em;color:var(--g3);transition:color 3s;}
-body.heaven #eps-display{color:#5a8fa8;}
-
-/* PROGRESS */
-#progress-wrap{position:absolute;bottom:1rem;left:50%;transform:translateX(-50%);width:clamp(160px,40vw,380px);z-index:3;}
-.prog-label{font-size:.46rem;letter-spacing:.2em;color:var(--g2);margin-bottom:.28rem;text-align:center;transition:color 3s;}
-body.heaven .prog-label{color:#5a8fa8;}
-.prog-track{height:2px;background:var(--g1);border-radius:2px;overflow:hidden;transition:background 3s;}
-body.heaven .prog-track{background:rgba(168,216,240,.3);}
-.prog-fill{height:100%;background:var(--g4);border-radius:2px;box-shadow:0 0 8px var(--g4);transition:width .6s ease,background 3s,box-shadow 3s;}
-body.heaven .prog-fill{background:gold;box-shadow:0 0 12px gold;}
-
-/* SHOP */
-#shop{grid-area:shop;width:clamp(235px,27vw,325px);border-left:1px solid var(--g2);background:rgba(2,10,3,.93);display:flex;flex-direction:column;overflow:hidden;transition:background 3s,border-color 3s;}
-body.heaven #shop{background:rgba(232,244,253,.94);border-left-color:#a8d8f0;}
-.shop-header{padding:.55rem .9rem .38rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(22,92,26,.3);transition:border-color 3s;}
-body.heaven .shop-header{border-bottom-color:rgba(168,216,240,.4);}
-.shop-header-title{font-size:.5rem;letter-spacing:.26em;color:var(--g2);text-transform:uppercase;transition:color 3s;}
-body.heaven .shop-header-title{color:#5a8fa8;}
-.shop-tabs{display:flex;gap:.28rem;}
-.shop-tab{font-size:.46rem;letter-spacing:.14em;padding:.16rem .38rem;border:1px solid var(--g2);border-radius:2px;cursor:pointer;color:var(--g3);background:transparent;font-family:var(--mono);transition:all .18s;}
-.shop-tab.active{border-color:var(--g4);color:var(--g4);background:rgba(34,160,42,.08);}
-body.heaven .shop-tab{border-color:#a8d8f0;color:#5a8fa8;}
-body.heaven .shop-tab.active{border-color:#1a6b8a;color:#1a6b8a;background:rgba(26,107,138,.08);}
-#shop-list{flex:1;overflow-y:auto;padding:.38rem .45rem .7rem;scrollbar-width:thin;scrollbar-color:var(--g2) transparent;}
-body.heaven #shop-list{scrollbar-color:#a8d8f0 transparent;}
-
-/* UPGRADE CARDS */
-.upgrade{border:1px solid var(--g2);border-radius:3px;padding:.5rem .6rem;margin-bottom:.36rem;cursor:pointer;transition:border-color .18s,background .18s,opacity .18s;background:rgba(7,26,9,.5);position:relative;overflow:hidden;}
-.upgrade::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(46,204,56,.05),transparent);transform:translateX(-100%);transition:transform .35s;}
-.upgrade:hover::before{transform:translateX(100%)}
-.upgrade:hover{border-color:var(--g3);background:rgba(13,46,16,.65)}
-.upgrade.affordable:hover{border-color:var(--g4)}
-.upgrade.cant-afford{opacity:.36;cursor:default;}
-.upgrade.cant-afford:hover::before{transform:translateX(-100%)}
-.upgrade.locked{opacity:.16;cursor:default;pointer-events:none}
-.upgrade.maxed{opacity:.45;cursor:default;border-style:dashed;}
-body.heaven .upgrade{background:rgba(255,255,255,.4);border-color:rgba(168,216,240,.5);}
-body.heaven .upgrade:hover{background:rgba(255,255,255,.6);border-color:#a8d8f0;}
-.upg-name{font-size:.66rem;font-weight:700;color:var(--g5);letter-spacing:.06em;margin-bottom:.12rem;transition:color 3s;}
-body.heaven .upg-name{color:#1a4a6b;}
-.upg-desc{font-size:.52rem;color:var(--g3);letter-spacing:.03em;line-height:1.48;margin-bottom:.28rem;transition:color 3s;}
-body.heaven .upg-desc{color:#5a8fa8;}
-.upg-footer{display:flex;align-items:center;justify-content:space-between;}
-.upg-cost{font-size:.6rem;font-weight:700;color:var(--g4);letter-spacing:.07em;transition:color 3s;}
-body.heaven .upg-cost{color:#1a6b8a;}
-.upg-owned{font-size:.48rem;letter-spacing:.09em;color:var(--g2);transition:color 3s;}
-body.heaven .upg-owned{color:#5a8fa8;}
-.upg-tag{display:inline-block;font-size:.42rem;letter-spacing:.15em;padding:.05rem .26rem;border:1px solid var(--g2);border-radius:1px;color:var(--g2);margin-bottom:.24rem;text-transform:uppercase;transition:all 3s;}
-.upg-tag.s1{border-color:#0d2e10;color:#0d2e10;}
-.upg-tag.s2{border-color:#165c1a;color:#165c1a;}
-.upg-tag.s3{border-color:#22a02a;color:#22a02a;}
-.upg-tag.s4{border-color:#2ecc38;color:#2ecc38;}
-.upg-tag.s5{border-color:#5eff68;color:#5eff68;}
-.upg-tag.s6{border-color:#a8ffad;color:#a8ffad;}
-.upg-tag.s7{border-color:gold;color:gold;}
-body.heaven .upg-tag.s7{border-color:#ffd700;color:#ffd700;}
-
-/* MILESTONE CARDS */
-.milestone-card{border:1px solid var(--g2);border-radius:3px;padding:.45rem .55rem;margin-bottom:.34rem;background:rgba(7,26,9,.4);display:flex;align-items:center;gap:.55rem;transition:all 3s;}
-.milestone-card.done{border-color:var(--g3);background:rgba(13,46,16,.4);}
-body.heaven .milestone-card{background:rgba(255,255,255,.35);border-color:rgba(168,216,240,.4);}
-body.heaven .milestone-card.done{background:rgba(255,215,0,.1);border-color:rgba(255,215,0,.4);}
-.ms-icon{font-size:.95rem;flex-shrink:0;}
-.ms-info{flex:1;}
-.ms-name{font-size:.6rem;font-weight:700;color:var(--g4);letter-spacing:.06em;transition:color 3s;}
-body.heaven .ms-name{color:#1a6b8a;}
-.ms-desc{font-size:.48rem;color:var(--g3);letter-spacing:.04em;margin-top:.08rem;transition:color 3s;}
-body.heaven .ms-desc{color:#5a8fa8;}
-.ms-reward{font-size:.48rem;color:var(--g5);letter-spacing:.05em;margin-top:.08rem;transition:color 3s;}
-body.heaven .ms-reward{color:#1a4a6b;}
-.ms-check{font-size:.85rem;color:var(--g4);transition:color 3s;}
-body.heaven .ms-check{color:gold;}
-
-/* MILESTONE PIPS ROW */
-#milestone-row{position:absolute;top:.5rem;left:50%;transform:translateX(-50%);display:flex;gap:.35rem;z-index:5;pointer-events:none;}
-.ms-pip{width:5px;height:5px;border-radius:50%;border:1px solid var(--g3);background:transparent;transition:all .4s;}
-.ms-pip.done{background:var(--g4);border-color:var(--g4);}
-body.heaven .ms-pip{border-color:rgba(255,215,0,.4);}
-body.heaven .ms-pip.done{background:gold;border-color:gold;}
-
-/* HEAVEN TEXT LABELS */
-#heaven-label{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-family:var(--serif);font-size:clamp(2.5rem,8vw,5rem);color:white;opacity:0;pointer-events:none;z-index:100;text-shadow:0 0 40px gold,0 0 80px rgba(255,255,255,.5);letter-spacing:.1em;transition:opacity 2s ease;}
-#heaven-label.show{opacity:1;}
-
-/* END SCREEN */
-#endscreen{position:fixed;inset:0;z-index:900;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 1.5s ease;}
-#endscreen.show{opacity:1;pointer-events:all}
+/* ── END SCREEN ── */
+#end-scr{position:fixed;inset:0;z-index:900;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 1.5s;background:var(--ab);}
+#end-scr.show{opacity:1;pointer-events:all;}
 #end-canvas{position:absolute;inset:0;pointer-events:none;}
-.end-title{font-family:var(--serif);font-size:clamp(2rem,6vw,3.8rem);color:var(--g6);letter-spacing:.06em;margin-bottom:.5rem;position:relative;z-index:1;text-align:center;}
-.end-sub{font-size:.6rem;letter-spacing:.2em;color:var(--g3);margin-bottom:2rem;position:relative;z-index:1;text-align:center;}
-.end-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:.7rem;margin-bottom:2.2rem;position:relative;z-index:1;max-width:500px;width:90%;}
-.end-stat{text-align:center;border:1px solid var(--g2);border-radius:3px;padding:.55rem .7rem;background:rgba(7,26,9,.5);}
-.end-stat-val{font-size:.95rem;font-weight:700;color:var(--g5);letter-spacing:.04em;}
-.end-stat-lbl{font-size:.44rem;letter-spacing:.16em;color:var(--g3);margin-top:.18rem;}
-.end-btns{display:flex;gap:1rem;position:relative;z-index:1;flex-wrap:wrap;justify-content:center;}
-.end-btn{padding:.65rem 1.6rem;border:1px solid var(--g3);background:transparent;color:var(--g5);font-family:var(--mono);font-size:.68rem;letter-spacing:.13em;cursor:pointer;border-radius:2px;transition:all .18s;text-transform:uppercase;}
-.end-btn:hover{border-color:var(--g4);background:rgba(34,160,42,.12);color:var(--g6)}
-.end-btn.prestige{border-color:var(--neon);color:var(--neon);}
-.end-btn.prestige:hover{background:rgba(0,255,68,.1);}
-.prestige-bonus{font-size:.54rem;letter-spacing:.1em;color:var(--g3);margin-top:.9rem;position:relative;z-index:1;text-align:center;}
+.end-t{font-family:var(--serif);font-size:clamp(1.8rem,5.5vw,3.5rem);color:var(--at);letter-spacing:.06em;margin-bottom:.45rem;position:relative;z-index:1;text-align:center;}
+.end-s{font-size:.56rem;letter-spacing:.16em;color:var(--ac);margin-bottom:1.6rem;position:relative;z-index:1;text-align:center;opacity:.8;}
+.end-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:.55rem;margin-bottom:1.8rem;position:relative;z-index:1;max-width:440px;width:92%;}
+.end-stat{text-align:center;border:1px solid var(--g2);border-radius:3px;padding:.45rem .55rem;background:rgba(7,26,9,.5);}
+.end-sv{font-size:.85rem;font-weight:700;color:var(--at);}
+.end-sl{font-size:.4rem;letter-spacing:.13em;color:var(--ac);margin-top:.14rem;}
+.end-btns{display:flex;gap:.8rem;position:relative;z-index:1;flex-wrap:wrap;justify-content:center;}
+.end-btn{padding:.55rem 1.4rem;border:1px solid var(--g3);background:transparent;color:var(--at);font-family:var(--mono);font-size:.62rem;letter-spacing:.12em;cursor:pointer;border-radius:2px;transition:all .18s;text-transform:uppercase;}
+.end-btn:hover{border-color:var(--ac);color:var(--at);}
+.end-btn.pr{border-color:var(--neon);color:var(--neon);}
+.pr-txt{font-size:.5rem;color:var(--g3);margin-top:.7rem;position:relative;z-index:1;text-align:center;}
 
-/* PRESTIGE BADGE */
-#prestige-badge{display:none;position:fixed;top:.6rem;left:50%;transform:translateX(-50%);z-index:10;font-size:.5rem;letter-spacing:.16em;color:var(--neon);border:1px solid rgba(0,255,68,.3);padding:.18rem .55rem;border-radius:2px;background:rgba(0,255,68,.06);pointer-events:none;}
-
-/* TOAST */
-#toast{position:fixed;bottom:1.8rem;left:50%;transform:translateX(-50%);font-size:.58rem;letter-spacing:.12em;color:var(--g5);border:1px solid var(--g3);background:rgba(7,26,9,.95);padding:.35rem .85rem;border-radius:2px;z-index:800;opacity:0;pointer-events:none;transition:opacity .3s ease;white-space:nowrap;}
-#toast.show{opacity:1}
-body.heaven #toast{background:rgba(240,248,255,.95);border-color:#a8d8f0;color:#1a4a6b;}
-
-/* FLASH */
-#event-flash{position:fixed;inset:0;z-index:500;pointer-events:none;opacity:0;transition:opacity .12s;background:rgba(0,255,68,.04);}
-#event-flash.flash{opacity:1;}
-#event-flash.heaven-flash{background:rgba(255,215,0,.08);}
+#prestige-b{display:none;position:fixed;top:.5rem;left:50%;transform:translateX(-50%);z-index:10;font-size:.46rem;letter-spacing:.14em;color:var(--neon);border:1px solid rgba(0,255,68,.3);padding:.15rem .48rem;border-radius:2px;background:rgba(0,255,68,.06);pointer-events:none;}
+#toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);font-size:.54rem;letter-spacing:.1em;color:var(--at);border:1px solid var(--ac);background:rgba(7,26,9,.96);padding:.3rem .75rem;border-radius:2px;z-index:800;opacity:0;pointer-events:none;transition:opacity .3s;white-space:nowrap;}
+#toast.show{opacity:1;}
+body.t-heaven #toast{background:rgba(240,248,255,.96);}
+#eflash{position:fixed;inset:0;z-index:500;pointer-events:none;opacity:0;transition:opacity .1s;}
+#eflash.fl{opacity:1;}
 </style>
 </head>
 <body>
-<div id="prestige-badge">✦ prestige activo</div>
-<div id="loading">
-  <div class="load-title">verdant pulse</div>
-  <div class="load-ring-wrap">
-    <div class="load-ring"></div><div class="load-ring"></div><div class="load-ring"></div>
-    <div class="load-core"></div>
+
+<!-- UPDATE POPUP -->
+<div id="update-popup">
+  <div class="upop">
+    <button class="upop-close" onclick="closeUpdate()">✕</button>
+    <div class="upop-title">verdant pulse</div>
+    <div class="upop-ver">ACTUALIZACIÓN v5.0 — NOTAS DE PARCHE</div>
+    <div class="upop-section">✦ nuevo contenido</div>
+    <div class="upop-item"><div class="upop-bul">→</div><div class="upop-txt"><strong>30 islas / etapas</strong> nuevas, cada una con su propia estética y desafíos. La progresión ahora dura <strong>decenas de horas</strong> de juego real.</div></div>
+    <div class="upop-item"><div class="upop-bul">→</div><div class="upop-txt"><strong>8 temas visuales</strong> que se desbloquean al alcanzar hitos de energía: Cielo, Mundo Abandonado, Inframundo, Vacío Cósmico, Mundo Cristal, Aurora, Solar y Profundidades.</div></div>
+    <div class="upop-item"><div class="upop-bul">→</div><div class="upop-txt">Nuevas <strong>habilidades activas y pasivas</strong> exclusivas de cada mundo.</div></div>
+    <div class="upop-section">⚖ balance</div>
+    <div class="upop-item"><div class="upop-bul">→</div><div class="upop-txt">Multiplicadores <strong>fuertemente nerfados</strong>. Los números grandes tardan mucho más en alcanzarse. La economía fue rediseñada para requerir estrategia real.</div></div>
+    <div class="upop-item"><div class="upop-bul">→</div><div class="upop-txt">Umbrales de etapas <strong>exponencialmente más altos</strong>. Completar el juego requiere alcanzar un número de energía imposiblemente grande.</div></div>
+    <div class="upop-warn">
+      <div class="upop-warn-t">⚠ SISTEMA ANTICHEAT v2 — ACTIVO</div>
+      <div class="upop-warn-b">El sistema ahora detecta <strong>consistencia inhumana</strong> además de velocidad. Si hacés más de <strong>10 CPS</strong> <em>o</em> si tus clicks son demasiado regulares (como los de un bot), el orbe se <strong>bloquea por 30 segundos</strong> y se registra una infracción. <strong>3 infracciones = bloqueo permanente de la run.</strong></div>
+    </div>
+    <button class="upop-ok" onclick="closeUpdate()">entendido — comenzar</button>
   </div>
-  <div class="load-bar-wrap"><div class="load-bar" id="load-bar"></div></div>
-  <div class="load-pct" id="load-pct">0%</div>
+</div>
+
+<!-- LOADING -->
+<div id="loading" style="display:none;">
+  <div class="lt">verdant pulse</div>
+  <div class="lrw"><div class="lr"></div><div class="lr"></div><div class="lr"></div><div class="lcore"></div></div>
+  <div class="lbw"><div class="lb" id="lb"></div></div>
+  <div class="lpct" id="lpct">0%</div>
+</div>
+
+<!-- ANTICHEAT -->
+<div id="ac-warn">
+  <div class="ac-box">
+    <div class="ac-t">⚠ COMPORTAMIENTO SOSPECHOSO</div>
+    <div class="ac-s" id="ac-msg">Se detectó actividad inhumana.<br>El orbe está bloqueado.</div>
+    <div class="ac-n" id="ac-num">30</div>
+    <div class="ac-r" id="ac-inf">infracciones: 0 / 3</div>
+  </div>
+</div>
+
+<!-- TRANSITION -->
+<div id="tr-scr">
+  <div class="tr-t" id="tr-t"></div>
+  <div class="tr-s" id="tr-s"></div>
 </div>
 
 <canvas id="bg-canvas"></canvas>
-<div id="heaven-overlay"></div>
-<canvas id="heaven-canvas"></canvas>
-<div id="heaven-label">ascensión</div>
+<canvas id="hv-canvas" class="theme-canvas"></canvas>
+<canvas id="ws-canvas" class="theme-canvas"></canvas>
+<canvas id="if-canvas" class="theme-canvas"></canvas>
+<canvas id="vc-canvas" class="theme-canvas"></canvas>
+<canvas id="cr-canvas" class="theme-canvas"></canvas>
+<canvas id="ar-canvas" class="theme-canvas"></canvas>
+<canvas id="sl-canvas" class="theme-canvas"></canvas>
+<canvas id="dp-canvas" class="theme-canvas"></canvas>
+
+<div id="prestige-b">✦ prestige activo</div>
 <div id="toast"></div>
-<div id="event-flash"></div>
+<div id="eflash"></div>
 
 <div id="game">
-  <div id="header">
+  <div id="hdr">
     <div class="hdr-title">verdant pulse</div>
-    <div class="hdr-center">
-      <div class="hdr-stat"><div class="hdr-stat-val" id="energy-display">0</div><div class="hdr-stat-lbl">energía vital</div></div>
-      <div class="hdr-div"></div>
-      <div class="hdr-stat"><div class="hdr-stat-val" id="total-display">0</div><div class="hdr-stat-lbl">total generado</div></div>
-      <div class="hdr-div"></div>
-      <div class="hdr-stat"><div class="hdr-stat-val" id="eps-hdr">0/s</div><div class="hdr-stat-lbl">velocidad</div></div>
-      <div class="hdr-div"></div>
-      <div class="hdr-stat"><div class="hdr-stat-val" id="clicks-display">0</div><div class="hdr-stat-lbl">clicks</div></div>
+    <div class="hdr-mid">
+      <div class="hstat"><div class="hstat-v" id="h-ev">0</div><div class="hstat-l">energía</div></div>
+      <div class="hdiv"></div>
+      <div class="hstat"><div class="hstat-v" id="h-tot">0</div><div class="hstat-l">total</div></div>
+      <div class="hdiv"></div>
+      <div class="hstat"><div class="hstat-v" id="h-eps">0/s</div><div class="hstat-l">velocidad</div></div>
+      <div class="hdiv"></div>
+      <div class="hstat"><div class="hstat-v" id="h-clk">0</div><div class="hstat-l">clicks</div></div>
+      <div class="hdiv"></div>
+      <div class="hstat"><div class="hstat-v" id="h-mult">×1</div><div class="hstat-l">mult total</div></div>
     </div>
-    <div style="display:flex;align-items:center;gap:.6rem;">
-      <div class="hdr-stage" id="stage-badge">ETAPA<br><span id="stage-name">GERMINACIÓN</span></div>
+    <div class="hdr-right">
+      <div id="world-badge-wrap"></div>
+      <div class="stage-badge">ETAPA<br><span id="st-name">SEMILLA</span></div>
     </div>
   </div>
 
-  <div id="stage">
-    <div id="milestone-row"></div>
+  <div id="stg">
+    <div id="ms-row"></div>
     <div id="orb-wrap">
-      <div class="orb-aura"></div><div class="orb-aura"></div><div class="orb-aura"></div>
-      <div id="orb">
-        <div id="fill-ring"></div>
-        <div id="combo-display"></div>
-      </div>
+      <div class="oaura"></div><div class="oaura"></div><div class="oaura"></div>
+      <div id="orb"><div id="fill-ring"></div><div id="combo-d"></div></div>
     </div>
     <div id="stats-strip">
-      <div class="ss-item"><div class="ss-val" id="cps-val">1</div><div class="ss-lbl">ev/click</div></div>
-      <div class="ss-item"><div class="ss-val" id="mult-val">×1</div><div class="ss-lbl">multiplicador</div></div>
-      <div class="ss-item"><div class="ss-val" id="auto-val">0</div><div class="ss-lbl">auto ev/s</div></div>
-      <div class="ss-item"><div class="ss-val" id="prestige-val">×1</div><div class="ss-lbl">prestige</div></div>
+      <div class="ss"><div class="ss-v" id="ss-cps">1</div><div class="ss-l">ev/click</div></div>
+      <div class="ss"><div class="ss-v" id="ss-mult">×1</div><div class="ss-l">multiplicador</div></div>
+      <div class="ss"><div class="ss-v" id="ss-auto">0</div><div class="ss-l">auto/s</div></div>
+      <div class="ss"><div class="ss-v" id="ss-pres">×1</div><div class="ss-l">prestige</div></div>
     </div>
-    <div id="ability-bar"></div>
-    <div id="oc-timer"></div>
-    <div id="eps-display">0 ev/s</div>
-    <div id="progress-wrap">
-      <div class="prog-label" id="prog-label">PULSO VITAL — <span id="prog-pct">0%</span></div>
+    <div id="abil-bar"></div>
+    <div id="oc-t"></div>
+    <div id="eps-d">0 ev/s</div>
+    <div id="prog-wrap">
+      <div class="prog-lbl" id="prog-lbl">PULSO VITAL — 0.0000%</div>
       <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
     </div>
   </div>
 
-  <div id="shop">
-    <div class="shop-header">
-      <div class="shop-header-title">tienda</div>
-      <div class="shop-tabs">
-        <button class="shop-tab active" onclick="switchTab('upgrades')">mejoras</button>
-        <button class="shop-tab" onclick="switchTab('milestones')">logros</button>
+  <div id="shp">
+    <div class="shp-hdr">
+      <div class="shp-hdr-t">tienda</div>
+      <div class="shp-tabs">
+        <button class="stab act" onclick="switchTab('u')">mejoras</button>
+        <button class="stab" onclick="switchTab('m')">logros</button>
       </div>
     </div>
-    <div id="shop-list"></div>
+    <div id="shp-list"></div>
   </div>
 </div>
 
-<div id="endscreen">
+<div id="end-scr">
   <canvas id="end-canvas"></canvas>
-  <div class="end-title" id="end-title">ascensión total</div>
-  <div class="end-sub" id="end-sub">el sistema alcanzó el cielo</div>
+  <div class="end-t" id="end-t">fin del ciclo</div>
+  <div class="end-s" id="end-s">la energía fue liberada</div>
   <div class="end-stats">
-    <div class="end-stat"><div class="end-stat-val" id="end-total">0</div><div class="end-stat-lbl">ev generados</div></div>
-    <div class="end-stat"><div class="end-stat-val" id="end-clicks">0</div><div class="end-stat-lbl">clicks totales</div></div>
-    <div class="end-stat"><div class="end-stat-val" id="end-time">0m</div><div class="end-stat-lbl">duración</div></div>
+    <div class="end-stat"><div class="end-sv" id="e-tot">0</div><div class="end-sl">ev generados</div></div>
+    <div class="end-stat"><div class="end-sv" id="e-clk">0</div><div class="end-sl">clicks</div></div>
+    <div class="end-stat"><div class="end-sv" id="e-time">0m</div><div class="end-sl">duración</div></div>
   </div>
   <div class="end-btns">
-    <button class="end-btn prestige" onclick="doPrestige()">✦ prestige ×<span id="prestige-mult-btn">1.5</span></button>
+    <button class="end-btn pr" onclick="doPrestige()">✦ prestige ×<span id="pr-m">1.5</span></button>
     <button class="end-btn" onclick="doComplete()">cerrar run</button>
   </div>
-  <div class="prestige-bonus" id="prestige-bonus-txt"></div>
+  <div class="pr-txt" id="pr-txt"></div>
 </div>
 
 <script>
-// ═══════════════════════════════════════════════════════════
-//  VERDANT PULSE v3 — EXTENDED + HEAVEN STAGE
-// ═══════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════
+//  VERDANT PULSE v5 — 30 STAGES, 8 WORLDS, ANTICHEAT v2
+// ════════════════════════════════════════════════════════════════
 
 const G = {
-  energy: 0,
-  totalEarned: 0,
-  clickPower: 1,
-  multiplier: 1,
-  prestigeMult: parseFloat(localStorage.getItem('vp_prestige') || '1'),
-  prestigeCount: parseInt(localStorage.getItem('vp_prestige_n') || '0'),
+  ev:0, tot:0, cp:1, mult:1,
+  pMult: parseFloat(localStorage.getItem('vp_pm')||'1'),
+  pCount: parseInt(localStorage.getItem('vp_pc')||'0'),
+  auto:0, combo:0, comboMax:1, clicks:0,
 
-  autoClickers: 0,
-  comboCount: 0, comboMax: 1, comboTimer: 0,
-  totalClicks: 0,
+  // anticheat
+  clickLog:[], acBlocked:false, acBlockEnd:0, acWarnings:0,
+  acIntervals:[], acPermanent:false,
 
-  // abilities
-  overchargeAvail:false, overchargeActive:false, overchargeEnd:0, ocCooldown:false, ocCooldownEnd:0,
-  frenzyAvail:false, frenzyActive:false, frenzyEnd:0, frenzyCD:false,
-  voidAvail:false, voidActive:false, voidEnd:0, voidCD:false,
-  divineAvail:false, divineActive:false, divineEnd:0, divineCD:false,
+  // abilities active
+  ocA:false,ocE:0, fzA:false,fzE:0, vdA:false,vdE:0,
+  dvA:false,dvE:0, ifA:false,ifE:0, vcA:false,vcE:0,
+  crA:false,crE:0, srA:false,srE:0,
+
+  // abilities cooldown
+  ocCD:false,ocCDE:0, fzCD:false,fzCDE:0, vdCD:false,vdCDE:0,
+  dvCD:false,dvCDE:0, ifCD:false,ifCDE:0, vcCD:false,vcCDE:0,
+  crCD:false,crCDE:0, srCD:false,srCDE:0,
 
   // passives
-  pulseChainAvail:false, pulseChainTimer:0,
-  echoAvail:false, echoTimer:0,
-  bloomAvail:false, bloomTimer:0,
-  novaAvail:false, novaTimer:0,
-  harmonicsAvail:false, harmonicsTimer:0,
+  echoA:false,echoT:0,
+  bloomA:false,bloomT:0,
+  pchainA:false,pchainT:0,
+  novaA:false,novaT:0,
+  harmA:false,harmT:0,
+  soulA:false,soulT:0,
+  vortexA:false,vortexT:0,
+  sunA:false,sunT:0,
+  abyssA:false,abyssT:0,
 
-  stage: 1,
-  heavenMode: false,
-  gameOver: false,
-  startTime: Date.now(),
+  stage:1, world:'green', worldsUnlocked:{},
+  gameOver:false, startTime:Date.now(),
 
-  // END threshold — very high, many hours
-  endThreshold: 5e14,
-  // heaven threshold
-  heavenThreshold: 5e10,
+  // WORLD UNLOCK THRESHOLDS (exaggerated)
+  wThresh:{
+    heaven:   5e17,     // 500 quadrillion
+    wasteland:5e27,     // 500 octillion
+    inferno:  6e32,     // 600 nonillion
+    void:     2e40,     // 200 undecillion
+    crystal:  8e50,     // 800 quindecillion
+    aurora:   3e62,
+    solar:    1e75,
+    deep:     5e89,
+  },
 
-  upgrades: {},
-  milestones: {},
-  tab: 'upgrades',
+  // END THRESHOLD
+  endT: 1e100, // one googol
+
+  upgrades:{}, milestones:{}, tab:'u',
 };
 
-// ── STAGE CONFIG ─────────────────────────────────────────
+// ── 30 STAGES ────────────────────────────────────────────────────
 const STAGES = {
-  1: { name:'GERMINACIÓN',   thresh:0,       bgMode:1 },
-  2: { name:'CRECIMIENTO',   thresh:5e4,     bgMode:2 },
-  3: { name:'FLORACIÓN',     thresh:8e6,     bgMode:2 },
-  4: { name:'SOBRECARGA',    thresh:5e8,     bgMode:3 },
-  5: { name:'COLAPSO',       thresh:2e10,    bgMode:3 },
-  6: { name:'SINGULARIDAD',  thresh:8e11,    bgMode:4 },
-  7: { name:'ASCENSIÓN',     thresh:5e13,    bgMode:5 },
+  1: {n:'SEMILLA',        t:0},
+  2: {n:'BROTE',          t:3e4},
+  3: {n:'RAÍZ',           t:8e6},
+  4: {n:'TALLO',          t:5e9},
+  5: {n:'HOJA',           t:2e12},
+  6: {n:'FLOR',           t:8e14},
+  7: {n:'FRUTO',          t:4e17},
+  8: {n:'ESPORO',         t:2e20},
+  9: {n:'MICELIOS',       t:8e22},
+  10:{n:'RED PROFUNDA',   t:4e25},
+  11:{n:'CORRIENTE',      t:2e28},
+  12:{n:'MAREJADA',       t:8e30},
+  13:{n:'TSUNAMI',        t:4e33},
+  14:{n:'VÓRTICE',        t:2e36},
+  15:{n:'TORMENTA',       t:8e38},
+  16:{n:'CICLÓN',         t:4e41},
+  17:{n:'HURACÁN',        t:2e44},
+  18:{n:'SINGULARIDAD',   t:8e46},
+  19:{n:'COLAPSO',        t:4e49},
+  20:{n:'NEBULOSA',       t:2e52},
+  21:{n:'ESTRELLA',       t:8e54},
+  22:{n:'SUPERNOVA',      t:4e57},
+  23:{n:'AGUJERO NEGRO',  t:2e60},
+  24:{n:'HORIZONTE',      t:8e62},
+  25:{n:'VACÍO ABSOLUTO', t:4e65},
+  26:{n:'ETERNIDAD',      t:2e70},
+  27:{n:'OMEGA',          t:8e75},
+  28:{n:'TRASCENDENCIA',  t:4e82},
+  29:{n:'ABSOLUTO',       t:2e90},
+  30:{n:'FINAL',          t:1e100},
 };
 
-// ── UPGRADES ─────────────────────────────────────────────
+// ── UPGRADES (nerfed multipliers, huge costs) ─────────────────────
 const UPGRADES = [
-  // ── STAGE 1 — germinación
-  {id:'c1a', s:1, name:'toque básico',         desc:'+2 ev/click',                            cost:50,    sc:1.85, fx:'click', v:2,     max:10},
-  {id:'m2a', s:1, name:'multiplicador ×2',     desc:'duplica la energía por click',           cost:100,   sc:2.2,  fx:'mult',  v:2,     max:1},
-  {id:'a1a', s:1, name:'auto-pulse i',         desc:'0.5 ev/s automático',                   cost:180,   sc:1.8,  fx:'auto',  v:.5,    max:8},
-  {id:'sz1', s:1, name:'nodo expandido',       desc:'el orbe crece',                          cost:250,   sc:2.8,  fx:'size',  v:10,    max:3},
-  {id:'c1b', s:1, name:'canalización i',       desc:'+5 ev/click',                           cost:500,   sc:2.0,  fx:'click', v:5,     max:6},
-  {id:'cbo', s:1, name:'instinto de pulso',    desc:'activa sistema de combo (clicks rápidos)',cost:700,  sc:99,   fx:'combo', v:1,     max:1},
-  {id:'a1b', s:1, name:'raíz nutriente',       desc:'2 ev/s automático',                     cost:1200,  sc:1.85, fx:'auto',  v:2,     max:6},
-  {id:'m3a', s:1, name:'multiplicador ×3',     desc:'×3 energía por click',                  cost:2200,  sc:2.5,  fx:'mult',  v:3,     max:1},
-  {id:'c1c', s:1, name:'pulso profundo i',     desc:'+12 ev/click',                          cost:3500,  sc:2.1,  fx:'click', v:12,    max:5},
-  {id:'a1c', s:1, name:'red de esporas',       desc:'8 ev/s automático',                     cost:6000,  sc:1.9,  fx:'auto',  v:8,     max:5},
-
-  // ── STAGE 2 — crecimiento
-  {id:'m5a', s:2, name:'multiplicador ×5',     desc:'×5 energía',                            cost:15000,  sc:2.8,  fx:'mult',  v:5,     max:1},
-  {id:'oc0', s:2, name:'sobrecarga vital',     desc:'habilidad: 6s ×3 ev (cd 30s)',          cost:25000,  sc:99,   fx:'overcharge',v:1, max:1},
-  {id:'a2a', s:2, name:'micelios activos',     desc:'40 ev/s automático',                    cost:40000,  sc:1.95, fx:'auto',  v:40,    max:7},
-  {id:'c2a', s:2, name:'resonancia celular',   desc:'+35 ev/click',                          cost:60000,  sc:2.3,  fx:'click', v:35,    max:4},
-  {id:'m8a', s:2, name:'multiplicador ×8',     desc:'×8 energía',                            cost:130000, sc:3.0,  fx:'mult',  v:8,     max:1},
-  {id:'ech', s:2, name:'eco de pulso',         desc:'pasivo: cada 12s dispara click ×15',    cost:200000, sc:99,   fx:'echo',  v:1,     max:1},
-  {id:'a2b', s:2, name:'venas de luz',         desc:'200 ev/s automático',                   cost:350000, sc:2.0,  fx:'auto',  v:200,   max:6},
-  {id:'sz2', s:2, name:'núcleo expandido',     desc:'el orbe sigue creciendo',               cost:500000, sc:99,   fx:'size',  v:16,    max:3},
-  {id:'m12', s:2, name:'multiplicador ×12',    desc:'×12 energía',                           cost:1.2e6,  sc:3.2,  fx:'mult',  v:12,    max:1},
-  {id:'c2b', s:2, name:'pulso profundo ii',    desc:'+100 ev/click',                         cost:2e6,    sc:2.4,  fx:'click', v:100,   max:4},
-
-  // ── STAGE 3 — floración
-  {id:'frz', s:3, name:'frenesí vital',        desc:'habilidad: 8s ×8 ev (cd 90s)',          cost:8e6,    sc:99,   fx:'frenzy',v:1,     max:1},
-  {id:'a3a', s:3, name:'corriente profunda',   desc:'1500 ev/s automático',                  cost:12e6,   sc:2.1,  fx:'auto',  v:1500,  max:7},
-  {id:'blm', s:3, name:'floración cuántica',   desc:'pasivo: cada 40s genera ráfaga enorme', cost:20e6,   sc:99,   fx:'bloom', v:1,     max:1},
-  {id:'m20', s:3, name:'multiplicador ×20',    desc:'×20 energía',                           cost:40e6,   sc:3.5,  fx:'mult',  v:20,    max:1},
-  {id:'c3a', s:3, name:'resonancia orgánica',  desc:'+500 ev/click',                         cost:80e6,   sc:2.5,  fx:'click', v:500,   max:4},
-  {id:'a3b', s:3, name:'colapso micelial',     desc:'8000 ev/s automático',                  cost:150e6,  sc:2.15, fx:'auto',  v:8000,  max:6},
-  {id:'pch', s:3, name:'pulse chain',          desc:'pasivo: cada 20s explota en anillos',   cost:280e6,  sc:99,   fx:'pchain',v:1,     max:1},
-  {id:'m40', s:3, name:'multiplicador ×40',    desc:'×40 energía',                           cost:600e6,  sc:4.0,  fx:'mult',  v:40,    max:1},
-  {id:'a3c', s:3, name:'tormenta vital',       desc:'50000 ev/s automático',                 cost:1.5e9,  sc:2.2,  fx:'auto',  v:50000, max:5},
-  {id:'c3b', s:3, name:'pulso profundo iii',   desc:'+3000 ev/click',                        cost:4e9,    sc:2.6,  fx:'click', v:3000,  max:4},
-
-  // ── STAGE 4 — sobrecarga
-  {id:'vd0', s:4, name:'drenaje del vacío',    desc:'habilidad: 12s ×25 ev (cd 2min)',       cost:15e9,   sc:99,   fx:'void',  v:1,     max:1},
-  {id:'a4a', s:4, name:'bucle de energía',     desc:'300k ev/s automático',                  cost:25e9,   sc:2.2,  fx:'auto',  v:3e5,   max:6},
-  {id:'m80', s:4, name:'multiplicador ×80',    desc:'×80 energía',                           cost:60e9,   sc:4.5,  fx:'mult',  v:80,    max:1},
-  {id:'nov', s:4, name:'nova orgánica',        desc:'pasivo: cada 60s, explosión masiva',    cost:120e9,  sc:99,   fx:'nova',  v:1,     max:1},
-  {id:'c4a', s:4, name:'canalización suprema', desc:'+20000 ev/click',                       cost:250e9,  sc:2.8,  fx:'click', v:20000, max:4},
-  {id:'a4b', s:4, name:'maelström vital',      desc:'2M ev/s automático',                    cost:600e9,  sc:2.3,  fx:'auto',  v:2e6,   max:5},
-  {id:'m200',s:4, name:'multiplicador ×200',   desc:'×200 energía',                          cost:1.5e12, sc:5.0,  fx:'mult',  v:200,   max:1},
-  {id:'hrm', s:4, name:'armónicos del pulso',  desc:'pasivo: cada 10s bonus basado en total',cost:4e12,   sc:99,   fx:'harm',  v:1,     max:1},
-
-  // ── STAGE 5 — colapso
-  {id:'a5a', s:5, name:'colapso cuántico',     desc:'10M ev/s automático',                   cost:8e12,   sc:2.3,  fx:'auto',  v:1e7,   max:6},
-  {id:'m500',s:5, name:'multiplicador ×500',   desc:'×500 energía',                          cost:20e12,  sc:5.5,  fx:'mult',  v:500,   max:1},
-  {id:'c5a', s:5, name:'eco del universo i',   desc:'+200k ev/click',                        cost:60e12,  sc:3.0,  fx:'click', v:2e5,   max:4},
-  {id:'a5b', s:5, name:'enjambre de luz',      desc:'80M ev/s automático',                   cost:200e12, sc:2.4,  fx:'auto',  v:8e7,   max:5},
-  {id:'m1k', s:5, name:'multiplicador ×1000',  desc:'×1000 energía — el colapso se acerca',  cost:600e12, sc:6.0,  fx:'mult',  v:1000,  max:1},
-
-  // ── STAGE 6 — singularidad
-  {id:'a6a', s:6, name:'singularidad verde',   desc:'500M ev/s automático',                  cost:2e15,   sc:2.4,  fx:'auto',  v:5e8,   max:5},
-  {id:'m5k', s:6, name:'multiplicador ×5000',  desc:'×5000 energía',                         cost:8e15,   sc:7.0,  fx:'mult',  v:5000,  max:1},
-  {id:'c6a', s:6, name:'eco del universo ii',  desc:'+5M ev/click',                          cost:25e15,  sc:3.2,  fx:'click', v:5e6,   max:3},
-  {id:'a6b', s:6, name:'tormenta de luz',      desc:'3B ev/s automático',                    cost:100e15, sc:2.5,  fx:'auto',  v:3e9,   max:4},
-
-  // ── STAGE 7 — ascensión (heaven)
-  {id:'dv0', s:7, name:'intervención divina',  desc:'habilidad: 15s ×50 ev (cd 3min)',       cost:1e18,   sc:99,   fx:'divine',v:1,     max:1},
-  {id:'a7a', s:7, name:'coro celestial',       desc:'20B ev/s automático',                   cost:5e18,   sc:2.6,  fx:'auto',  v:2e10,  max:5},
-  {id:'mInf',s:7, name:'multiplicador divino', desc:'×50000 — energía infinita',             cost:30e18,  sc:99,   fx:'mult',  v:50000, max:1},
+  // STAGE 1 — semilla
+  {id:'c1a',s:1,n:'toque básico i',       d:'+1 ev/click base',                   c:30,    sc:2.1, f:'click',v:1,   mx:15},
+  {id:'a1a',s:1,n:'auto-pulso i',         d:'0.2 ev/s automático',               c:80,    sc:1.9, f:'auto', v:.2,  mx:10},
+  {id:'m1a',s:1,n:'mult ×1.2',            d:'×1.2 — primer multiplicador',        c:200,   sc:3.5, f:'mult', v:1.2, mx:1},
+  {id:'sz1',s:1,n:'nodo i',               d:'el orbe crece un poco',              c:350,   sc:3.2, f:'size', v:9,   mx:3},
+  {id:'c1b',s:1,n:'canalización i',       d:'+2 ev/click',                       c:800,   sc:2.2, f:'click',v:2,   mx:8},
+  {id:'a1b',s:1,n:'raíz i',              d:'0.8 ev/s automático',               c:2000,  sc:2.0, f:'auto', v:.8,  mx:8},
+  {id:'m1b',s:1,n:'mult ×1.4',            d:'×1.4',                              c:5000,  sc:4.0, f:'mult', v:1.4, mx:1},
+  {id:'cbo',s:1,n:'instinto combo',       d:'activa combos al clickear rápido',  c:8000,  sc:99,  f:'combo',v:1,   mx:1},
+  {id:'c1c',s:1,n:'pulso i',              d:'+5 ev/click',                       c:15000, sc:2.3, f:'click',v:5,   mx:6},
+  {id:'a1c',s:1,n:'red de esporas i',     d:'3 ev/s automático',                 c:40000, sc:2.1, f:'auto', v:3,   mx:6},
+  // STAGE 2 — brote
+  {id:'m2a',s:2,n:'mult ×1.6',            d:'×1.6',                              c:2e5,   sc:4.2, f:'mult', v:1.6, mx:1},
+  {id:'oc0',s:2,n:'sobrecarga vital',     d:'habilidad: 8s ×2 ev (cd 60s)',      c:5e5,   sc:99,  f:'oc',   v:1,   mx:1},
+  {id:'a2a',s:2,n:'micelios i',           d:'12 ev/s automático',                c:8e5,   sc:2.1, f:'auto', v:12,  mx:8},
+  {id:'c2a',s:2,n:'resonancia i',         d:'+15 ev/click',                      c:2e6,   sc:2.4, f:'click',v:15,  mx:5},
+  {id:'m2b',s:2,n:'mult ×1.8',            d:'×1.8',                              c:8e6,   sc:4.5, f:'mult', v:1.8, mx:1},
+  {id:'ech',s:2,n:'eco de pulso',         d:'pasivo: cada 18s click ×10',        c:2e7,   sc:99,  f:'echo', v:1,   mx:1},
+  {id:'a2b',s:2,n:'venas de luz i',       d:'50 ev/s automático',                c:5e7,   sc:2.2, f:'auto', v:50,  mx:7},
+  {id:'sz2',s:2,n:'nodo ii',              d:'el orbe sigue creciendo',            c:1e8,   sc:99,  f:'size', v:12,  mx:3},
+  {id:'m2c',s:2,n:'mult ×2',              d:'×2 — primer número entero',         c:4e8,   sc:5.0, f:'mult', v:2,   mx:1},
+  {id:'c2b',s:2,n:'pulso ii',             d:'+40 ev/click',                      c:1.5e9, sc:2.5, f:'click',v:40,  mx:5},
+  // STAGE 3 — raíz
+  {id:'frz',s:3,n:'frenesí vital',        d:'habilidad: 10s ×3.5 (cd 150s)',     c:8e9,   sc:99,  f:'fz',   v:1,   mx:1},
+  {id:'a3a',s:3,n:'corriente i',          d:'250 ev/s automático',               c:2e10,  sc:2.2, f:'auto', v:250, mx:7},
+  {id:'blm',s:3,n:'floración cuántica',   d:'pasivo: cada 55s ráfaga masiva',    c:6e10,  sc:99,  f:'bloom',v:1,   mx:1},
+  {id:'m3a',s:3,n:'mult ×2.5',            d:'×2.5',                              c:2e11,  sc:5.5, f:'mult', v:2.5, mx:1},
+  {id:'c3a',s:3,n:'resonancia ii',        d:'+120 ev/click',                     c:7e11,  sc:2.6, f:'click',v:120, mx:5},
+  {id:'a3b',s:3,n:'tormenta i',           d:'1500 ev/s automático',              c:3e12,  sc:2.3, f:'auto', v:1500,mx:6},
+  {id:'pch',s:3,n:'pulse chain',          d:'pasivo: cada 28s explota en anillos',c:1e13, sc:99,  f:'pch',  v:1,   mx:1},
+  {id:'m3b',s:3,n:'mult ×3',              d:'×3',                                c:4e13,  sc:6.0, f:'mult', v:3,   mx:1},
+  {id:'a3c',s:3,n:'red profunda i',       d:'8000 ev/s automático',              c:2e14,  sc:2.4, f:'auto', v:8000,mx:6},
+  {id:'c3b',s:3,n:'pulso iii',            d:'+500 ev/click',                     c:8e14,  sc:2.7, f:'click',v:500, mx:5},
+  // STAGE 4 — tallo
+  {id:'vd0',s:4,n:'drenaje del vacío',    d:'habilidad: 15s ×8 (cd 3min)',       c:5e15,  sc:99,  f:'vd',   v:1,   mx:1},
+  {id:'a4a',s:4,n:'vórtice i',            d:'40k ev/s automático',               c:1.5e16,sc:2.4, f:'auto', v:4e4, mx:7},
+  {id:'m4a',s:4,n:'mult ×3.5',            d:'×3.5',                              c:6e16,  sc:6.5, f:'mult', v:3.5, mx:1},
+  {id:'nov',s:4,n:'nova orgánica',        d:'pasivo: cada 80s explosión masiva', c:2e17,  sc:99,  f:'nova', v:1,   mx:1},
+  {id:'c4a',s:4,n:'resonancia iii',       d:'+2000 ev/click',                    c:8e17,  sc:2.8, f:'click',v:2000,mx:5},
+  {id:'a4b',s:4,n:'maelström i',          d:'200k ev/s automático',              c:4e18,  sc:2.5, f:'auto', v:2e5, mx:6},
+  {id:'m4b',s:4,n:'mult ×4',              d:'×4',                                c:2e19,  sc:7.0, f:'mult', v:4,   mx:1},
+  {id:'hrm',s:4,n:'armónicos',            d:'pasivo: cada 14s bonus del total',  c:8e19,  sc:99,  f:'harm', v:1,   mx:1},
+  // STAGE 5 — hoja
+  {id:'dv0',s:5,n:'intervención divina',  d:'habilidad: 22s ×12 (cd 5min)',      c:5e20,  sc:99,  f:'dv',   v:1,   mx:1},
+  {id:'a5a',s:5,n:'colapso cuántico i',   d:'1M ev/s automático',                c:2e21,  sc:2.5, f:'auto', v:1e6, mx:7},
+  {id:'m5a',s:5,n:'mult ×5',              d:'×5',                                c:1e22,  sc:7.5, f:'mult', v:5,   mx:1},
+  {id:'c5a',s:5,n:'eco del universo i',   d:'+10k ev/click',                     c:5e22,  sc:3.0, f:'click',v:1e4, mx:5},
+  {id:'a5b',s:5,n:'enjambre i',           d:'6M ev/s automático',                c:3e23,  sc:2.6, f:'auto', v:6e6, mx:6},
+  {id:'m5b',s:5,n:'mult ×6',              d:'×6',                                c:2e24,  sc:8.0, f:'mult', v:6,   mx:1},
+  // STAGE 6 — flor
+  {id:'a6a',s:6,n:'singularidad i',       d:'30M ev/s automático',               c:1e25,  sc:2.6, f:'auto', v:3e7, mx:7},
+  {id:'m6a',s:6,n:'mult ×7',              d:'×7',                                c:6e25,  sc:8.5, f:'mult', v:7,   mx:1},
+  {id:'c6a',s:6,n:'mano del cosmos i',    d:'+80k ev/click',                     c:3e26,  sc:3.2, f:'click',v:8e4, mx:4},
+  {id:'a6b',s:6,n:'marea de luz i',       d:'150M ev/s automático',              c:2e27,  sc:2.7, f:'auto', v:1.5e8,mx:6},
+  // STAGE 7 — fruto
+  {id:'if0',s:7,n:'furia infernal',       d:'habilidad: 25s ×25 (cd 6min)',      c:2e28,  sc:99,  f:'if',   v:1,   mx:1},
+  {id:'a7a',s:7,n:'coro cósmico i',       d:'800M ev/s automático',              c:1e29,  sc:2.7, f:'auto', v:8e8, mx:7},
+  {id:'m7a',s:7,n:'mult ×8',              d:'×8',                                c:6e29,  sc:9.0, f:'mult', v:8,   mx:1},
+  {id:'c7a',s:7,n:'voluntad cósmica i',   d:'+500k ev/click',                    c:4e30,  sc:3.4, f:'click',v:5e5, mx:4},
+  {id:'a7b',s:7,n:'maremoto i',           d:'4B ev/s automático',                c:3e31,  sc:2.8, f:'auto', v:4e9, mx:6},
+  // STAGE 8 — esporo
+  {id:'vc0',s:8,n:'vacío cósmico',        d:'habilidad: 30s ×40 (cd 8min)',      c:3e32,  sc:99,  f:'vc',   v:1,   mx:1},
+  {id:'a8a',s:8,n:'tormenta de luz i',    d:'20B ev/s automático',               c:2e33,  sc:2.8, f:'auto', v:2e10,mx:7},
+  {id:'m8a',s:8,n:'mult ×10',             d:'×10 — primer doble dígito',         c:1e34,  sc:9.5, f:'mult', v:10,  mx:1},
+  {id:'c8a',s:8,n:'pulso galáctico i',    d:'+3M ev/click',                      c:8e34,  sc:3.6, f:'click',v:3e6, mx:4},
+  // STAGE 9 — micelios
+  {id:'sld',s:9,n:'drenar almas',         d:'pasivo: cada 9s robar del vacío',   c:8e35,  sc:99,  f:'soul', v:1,   mx:1},
+  {id:'a9a',s:9,n:'abismo vital i',       d:'100B ev/s automático',              c:6e36,  sc:2.9, f:'auto', v:1e11,mx:7},
+  {id:'m9a',s:9,n:'mult ×12',             d:'×12',                               c:4e37,  sc:10,  f:'mult', v:12,  mx:1},
+  {id:'c9a',s:9,n:'grito del cosmos i',   d:'+20M ev/click',                     c:3e38,  sc:3.8, f:'click',v:2e7, mx:4},
+  // STAGE 10 — red profunda
+  {id:'vx0',s:10,n:'vórtice cuántico',    d:'pasivo: cada 6s bonus masivo',      c:3e39,  sc:99,  f:'vort', v:1,   mx:1},
+  {id:'a10a',s:10,n:'singularidad ii',    d:'600B ev/s automático',              c:2e40,  sc:3.0, f:'auto', v:6e11,mx:7},
+  {id:'m10a',s:10,n:'mult ×15',           d:'×15',                               c:1.5e41,sc:11,  f:'mult', v:15,  mx:1},
+  {id:'c10a',s:10,n:'eco galáctico i',    d:'+100M ev/click',                    c:1e42,  sc:4.0, f:'click',v:1e8, mx:4},
+  // STAGE 11–15 (condensed)
+  {id:'a11a',s:11,n:'flujo cósmico',      d:'3T ev/s automático',                c:1e43,  sc:3.0, f:'auto', v:3e12,mx:7},
+  {id:'m11a',s:11,n:'mult ×18',           d:'×18',                               c:8e43,  sc:12,  f:'mult', v:18,  mx:1},
+  {id:'cr0', s:11,n:'resonancia cristal', d:'habilidad: 35s ×60 (cd 10min)',     c:6e44,  sc:99,  f:'cr',   v:1,   mx:1},
+  {id:'a12a',s:12,n:'tormenta cósmica',   d:'20T ev/s automático',               c:5e45,  sc:3.1, f:'auto', v:2e13,mx:7},
+  {id:'m12a',s:12,n:'mult ×22',           d:'×22',                               c:4e46,  sc:13,  f:'mult', v:22,  mx:1},
+  {id:'sn0', s:12,n:'pulso solar',        d:'habilidad: 40s ×90 (cd 12min)',     c:3e47,  sc:99,  f:'sr',   v:1,   mx:1},
+  {id:'a13a',s:13,n:'abismo profundo',    d:'120T ev/s automático',              c:2e48,  sc:3.2, f:'auto', v:1.2e14,mx:7},
+  {id:'m13a',s:13,n:'mult ×28',           d:'×28',                               c:1.5e49,sc:14,  f:'mult', v:28,  mx:1},
+  {id:'aby', s:13,n:'llamado del abismo', d:'pasivo: cada 7s robo masivo',       c:1e50,  sc:99,  f:'abyss',v:1,   mx:1},
+  {id:'a14a',s:14,n:'tsunami de luz',     d:'700T ev/s automático',              c:8e50,  sc:3.3, f:'auto', v:7e14,mx:7},
+  {id:'m14a',s:14,n:'mult ×35',           d:'×35',                               c:6e51,  sc:15,  f:'mult', v:35,  mx:1},
+  {id:'a15a',s:15,n:'marejada estelar',   d:'4Qd ev/s automático',               c:5e52,  sc:3.4, f:'auto', v:4e15,mx:7},
+  {id:'m15a',s:15,n:'mult ×45',           d:'×45 — etapa de tormenta',           c:4e53,  sc:16,  f:'mult', v:45,  mx:1},
+  // STAGE 16–20 (condensed)
+  {id:'a16a',s:16,n:'ciclón vital',       d:'25Qd ev/s automático',              c:3e54,  sc:3.5, f:'auto', v:2.5e16,mx:7},
+  {id:'m16a',s:16,n:'mult ×55',           d:'×55',                               c:2.5e55,sc:17,  f:'mult', v:55,  mx:1},
+  {id:'a17a',s:17,n:'huracán de luz',     d:'150Qd ev/s automático',             c:2e56,  sc:3.6, f:'auto', v:1.5e17,mx:7},
+  {id:'m17a',s:17,n:'mult ×70',           d:'×70',                               c:1.5e57,sc:18,  f:'mult', v:70,  mx:1},
+  {id:'a18a',s:18,n:'evento singular',    d:'1Qt ev/s automático',               c:1e58,  sc:3.7, f:'auto', v:1e18,mx:7},
+  {id:'m18a',s:18,n:'mult ×90',           d:'×90',                               c:8e58,  sc:19,  f:'mult', v:90,  mx:1},
+  {id:'a19a',s:19,n:'colapso total',      d:'7Qt ev/s automático',               c:6e59,  sc:3.8, f:'auto', v:7e18,mx:7},
+  {id:'m19a',s:19,n:'mult ×120',          d:'×120 — la nebulosa cae',            c:5e60,  sc:20,  f:'mult', v:120, mx:1},
+  {id:'a20a',s:20,n:'nebulosa activa',    d:'50Qt ev/s automático',              c:4e61,  sc:3.9, f:'auto', v:5e19,mx:7},
+  {id:'m20a',s:20,n:'mult ×160',          d:'×160',                              c:3e62,  sc:22,  f:'mult', v:160, mx:1},
+  // STAGE 21–25 (condensed)
+  {id:'a21a',s:21,n:'estrella vital',     d:'300Qt ev/s automático',             c:2.5e63,sc:4.0, f:'auto', v:3e20,mx:7},
+  {id:'m21a',s:21,n:'mult ×200',          d:'×200',                              c:2e64,  sc:24,  f:'mult', v:200, mx:1},
+  {id:'a22a',s:22,n:'supernova vital',    d:'2Qd ev/s automático',               c:1.5e65,sc:4.1, f:'auto', v:2e21,mx:7},
+  {id:'m22a',s:22,n:'mult ×260',          d:'×260 — supernova',                  c:1e66,  sc:26,  f:'mult', v:260, mx:1},
+  {id:'a23a',s:23,n:'agujero negro',      d:'15Qd ev/s automático',              c:8e66,  sc:4.2, f:'auto', v:1.5e22,mx:7},
+  {id:'m23a',s:23,n:'mult ×350',          d:'×350',                              c:6e67,  sc:28,  f:'mult', v:350, mx:1},
+  {id:'a24a',s:24,n:'horizonte vital',    d:'100Qd ev/s automático',             c:5e68,  sc:4.3, f:'auto', v:1e23,mx:7},
+  {id:'m24a',s:24,n:'mult ×450',          d:'×450',                              c:4e69,  sc:30,  f:'mult', v:450, mx:1},
+  {id:'a25a',s:25,n:'vacío absoluto',     d:'800Qd ev/s automático',             c:3e70,  sc:4.4, f:'auto', v:8e23,mx:7},
+  {id:'m25a',s:25,n:'mult ×600',          d:'×600 — el vacío total',             c:2.5e71,sc:33,  f:'mult', v:600, mx:1},
+  // STAGE 26–30 (condensed)
+  {id:'a26a',s:26,n:'eternidad fluida',   d:'6Sp ev/s automático',               c:2e72,  sc:4.5, f:'auto', v:6e24,mx:7},
+  {id:'m26a',s:26,n:'mult ×800',          d:'×800',                              c:1.5e73,sc:36,  f:'mult', v:800, mx:1},
+  {id:'a27a',s:27,n:'punto omega',        d:'50Sp ev/s automático',              c:1e74,  sc:4.6, f:'auto', v:5e25,mx:7},
+  {id:'m27a',s:27,n:'mult ×1100',         d:'×1100 — omega',                     c:8e74,  sc:40,  f:'mult', v:1100,mx:1},
+  {id:'a28a',s:28,n:'trascendencia pura', d:'400Sp ev/s automático',             c:6e75,  sc:4.7, f:'auto', v:4e26,mx:7},
+  {id:'m28a',s:28,n:'mult ×1600',         d:'×1600',                             c:5e76,  sc:45,  f:'mult', v:1600,mx:1},
+  {id:'a29a',s:29,n:'absoluto vital',     d:'3Oc ev/s automático',               c:4e77,  sc:4.8, f:'auto', v:3e27,mx:7},
+  {id:'m29a',s:29,n:'mult ×2500',         d:'×2500 — casi al final',             c:3e78,  sc:50,  f:'mult', v:2500,mx:1},
+  {id:'a30a',s:30,n:'pulso final',        d:'25Oc ev/s automático',              c:2e79,  sc:5.0, f:'auto', v:2.5e28,mx:7},
+  {id:'m30a',s:30,n:'mult ×5000',         d:'×5000 — el fin del ciclo',          c:1e80,  sc:99,  f:'mult', v:5000,mx:1},
 ];
 
-// ── MILESTONES ────────────────────────────────────────────
+// ── MILESTONES ────────────────────────────────────────────────────
 const MILESTONES = [
-  {id:'ms_c50',   name:'primer impulso',     desc:'50 clicks totales',         icon:'◉', check:()=>G.totalClicks>=50,    rw:'click', rv:3,    rt:'+3 ev/click'},
-  {id:'ms_e1k',   name:'umbral vital',       desc:'1.000 ev totales',          icon:'◈', check:()=>G.totalEarned>=1e3,   rw:'mult',  rv:1.2,  rt:'×1.2 mult'},
-  {id:'ms_c500',  name:'ritmo constante',    desc:'500 clicks',                icon:'◉', check:()=>G.totalClicks>=500,   rw:'click', rv:15,   rt:'+15 ev/click'},
-  {id:'ms_a5',    name:'red autónoma',       desc:'5 ev/s auto',               icon:'⟳', check:()=>G.autoClickers>=5,    rw:'auto',  rv:1,    rt:'+1 ev/s'},
-  {id:'ms_e50k',  name:'corriente verde',    desc:'50.000 ev totales',         icon:'◈', check:()=>G.totalEarned>=5e4,   rw:'mult',  rv:1.5,  rt:'×1.5 mult'},
-  {id:'ms_c5k',   name:'pulso constante',    desc:'5.000 clicks',              icon:'◉', check:()=>G.totalClicks>=5000,  rw:'click', rv:50,   rt:'+50 ev/click'},
-  {id:'ms_s2',    name:'primer crecimiento', desc:'llegar a etapa 2',          icon:'↑', check:()=>G.stage>=2,           rw:'mult',  rv:2,    rt:'×2 mult'},
-  {id:'ms_e5m',   name:'marea verde',        desc:'5M ev totales',             icon:'◈', check:()=>G.totalEarned>=5e6,   rw:'auto',  rv:50,   rt:'+50 ev/s'},
-  {id:'ms_a500',  name:'maraña de raíces',   desc:'500 ev/s auto',             icon:'⟳', check:()=>G.autoClickers>=500,  rw:'mult',  rv:1.8,  rt:'×1.8 mult'},
-  {id:'ms_c50k',  name:'el incansable',      desc:'50.000 clicks',             icon:'◉', check:()=>G.totalClicks>=50000, rw:'click', rv:500,  rt:'+500 ev/click'},
-  {id:'ms_s3',    name:'floración',          desc:'llegar a etapa 3',          icon:'↑', check:()=>G.stage>=3,           rw:'mult',  rv:3,    rt:'×3 mult'},
-  {id:'ms_e1b',   name:'colapso inminente',  desc:'1B ev totales',             icon:'◈', check:()=>G.totalEarned>=1e9,   rw:'auto',  rv:5000, rt:'+5k ev/s'},
-  {id:'ms_s4',    name:'sobrecarga',         desc:'llegar a etapa 4',          icon:'↑', check:()=>G.stage>=4,           rw:'mult',  rv:4,    rt:'×4 mult'},
-  {id:'ms_c500k', name:'el elegido',         desc:'500.000 clicks',            icon:'◉', check:()=>G.totalClicks>=5e5,   rw:'click', rv:5000, rt:'+5k ev/click'},
-  {id:'ms_e1t',   name:'singularidad',       desc:'1T ev totales',             icon:'★', check:()=>G.totalEarned>=1e12,  rw:'mult',  rv:8,    rt:'×8 mult'},
-  {id:'ms_s5',    name:'colapso',            desc:'llegar a etapa 5',          icon:'↑', check:()=>G.stage>=5,           rw:'mult',  rv:5,    rt:'×5 mult'},
-  {id:'ms_a1m',   name:'río de energía',     desc:'1M ev/s auto',              icon:'⟳', check:()=>G.autoClickers>=1e6,  rw:'mult',  rv:3,    rt:'×3 mult'},
-  {id:'ms_s6',    name:'singularidad',       desc:'llegar a etapa 6',          icon:'↑', check:()=>G.stage>=6,           rw:'mult',  rv:10,   rt:'×10 mult'},
-  {id:'ms_heaven','name':'el cielo',         desc:'50B ev totales — ascensión',icon:'✦', check:()=>G.totalEarned>=5e10,  rw:'mult',  rv:1,    rt:'bienvenido al cielo'},
-  {id:'ms_s7',    name:'ascensión',          desc:'llegar a etapa 7',          icon:'✦', check:()=>G.stage>=7,           rw:'mult',  rv:20,   rt:'×20 mult'},
+  {id:'mc50',   n:'primer impulso',  d:'50 clicks',           i:'◉',c:()=>G.clicks>=50,     r:'cp',rv:1,  rt:'+1 ev/click'},
+  {id:'me1k',   n:'umbral vital',    d:'1k ev totales',       i:'◈',c:()=>G.tot>=1e3,       r:'m', rv:1.1,rt:'×1.1 mult'},
+  {id:'mc1k',   n:'ritmo',          d:'1k clicks',           i:'◉',c:()=>G.clicks>=1000,   r:'cp',rv:5,  rt:'+5 ev/click'},
+  {id:'ma10',   n:'autonomía',       d:'10 ev/s auto',        i:'⟳',c:()=>G.auto>=10,       r:'a', rv:1,  rt:'+1 ev/s'},
+  {id:'me100k', n:'corriente verde', d:'100k ev totales',     i:'◈',c:()=>G.tot>=1e5,       r:'m', rv:1.15,rt:'×1.15'},
+  {id:'mc10k',  n:'pulso perpetuo',  d:'10k clicks',          i:'◉',c:()=>G.clicks>=10000,  r:'cp',rv:20, rt:'+20 ev/click'},
+  {id:'ms2',    n:'brote',           d:'etapa 2',             i:'↑',c:()=>G.stage>=2,       r:'m', rv:1.2,rt:'×1.2 mult'},
+  {id:'me10m',  n:'marea verde',     d:'10M ev totales',      i:'◈',c:()=>G.tot>=1e7,       r:'a', rv:10, rt:'+10 ev/s'},
+  {id:'ma100',  n:'red primaria',    d:'100 ev/s auto',       i:'⟳',c:()=>G.auto>=100,      r:'m', rv:1.3,rt:'×1.3'},
+  {id:'mc100k', n:'el incansable',   d:'100k clicks',         i:'◉',c:()=>G.clicks>=100000, r:'cp',rv:100,rt:'+100 ev/click'},
+  {id:'ms5',    n:'hoja',            d:'etapa 5',             i:'↑',c:()=>G.stage>=5,       r:'m', rv:1.5,rt:'×1.5 mult'},
+  {id:'me1b',   n:'primer billón',   d:'1B ev totales',       i:'◈',c:()=>G.tot>=1e9,       r:'a', rv:500,rt:'+500 ev/s'},
+  {id:'ms10',   n:'red profunda',    d:'etapa 10',            i:'↑',c:()=>G.stage>=10,      r:'m', rv:2,  rt:'×2 mult'},
+  {id:'me1t',   n:'trillón',         d:'1T ev totales',       i:'★',c:()=>G.tot>=1e12,      r:'m', rv:2.5,rt:'×2.5 mult'},
+  {id:'ms15',   n:'tormenta',        d:'etapa 15',            i:'↑',c:()=>G.stage>=15,      r:'m', rv:3,  rt:'×3 mult'},
+  {id:'mhvn',   n:'el cielo',        d:'500Q ev — ascensión', i:'☁',c:()=>G.tot>=5e17,      r:'n', rv:0,  rt:'bienvenido al cielo'},
+  {id:'ms20',   n:'nebulosa',        d:'etapa 20',            i:'↑',c:()=>G.stage>=20,      r:'m', rv:4,  rt:'×4 mult'},
+  {id:'me1sx',  n:'sextillón',       d:'1Sx ev',              i:'★',c:()=>G.tot>=1e21,      r:'m', rv:3,  rt:'×3 mult'},
+  {id:'mwst',   n:'mundo olvidado',  d:'500Oc ev — el vacío', i:'💀',c:()=>G.tot>=5e27,     r:'n', rv:0,  rt:'mundo abandonado'},
+  {id:'ms25',   n:'vacío absoluto',  d:'etapa 25',            i:'↑',c:()=>G.stage>=25,      r:'m', rv:5,  rt:'×5 mult'},
+  {id:'minf',   n:'el inframundo',   d:'6×10³² ev — el fuego',i:'🔥',c:()=>G.tot>=6e32,    r:'n', rv:0,  rt:'inframundo'},
+  {id:'mvcid',  n:'vacío cósmico',   d:'2×10⁴⁰ ev',           i:'🌀',c:()=>G.tot>=2e40,    r:'n', rv:0,  rt:'vacío cósmico'},
+  {id:'ms30',   n:'el final',        d:'etapa 30',            i:'∞', c:()=>G.stage>=30,     r:'m', rv:10, rt:'×10 mult'},
 ];
 
-// ── DOM ──────────────────────────────────────────────────
-const $ = id => document.getElementById(id);
-const $energy=$('energy-display'), $total=$('total-display'), $epsHdr=$('eps-hdr'),
-      $clicksD=$('clicks-display'), $epsD=$('eps-display'), $progF=$('prog-fill'),
-      $progPct=$('prog-pct'), $sSel=$('stage-name'), $orb=$('orb'),
-      $orbWrap=$('orb-wrap'), $fillRing=$('fill-ring'), $ocTimer=$('oc-timer'),
-      $shopList=$('shop-list'), $game=$('game'), $loading=$('loading'),
-      $endScr=$('endscreen'), $presB=$('prestige-badge'), $toast=$('toast'),
-      $abilBar=$('ability-bar'), $comboD=$('combo-display'),
-      $cpsV=$('cps-val'), $multV=$('mult-val'), $autoV=$('auto-val'),
-      $presV=$('prestige-val'), $msRow=$('milestone-row'),
-      $flash=$('event-flash'), $heavenOv=$('heaven-overlay'),
-      $heavenLabel=$('heaven-label'), $progLabel=$('prog-label');
+// ── WORLD THEMES ─────────────────────────────────────────────────
+const WORLDS = {
+  heaven:   {cls:'t-heaven',   title:'ascensión al cielo',  sub:'500 cuadrillones de energía — el mundo verde murió',  badge:'☁ CIELO',     canvas:'hv-canvas',  initFn:initHV,  drawFn:drawHV},
+  wasteland:{cls:'t-wasteland',title:'mundo abandonado',    sub:'500 octillones de energía — todo quedó en ruinas',    badge:'💀 VACÍO',     canvas:'ws-canvas',  initFn:initWS,  drawFn:drawWS},
+  inferno:  {cls:'t-inferno',  title:'el inframundo',       sub:'600 nonillones de energía — el fuego eterno',         badge:'🔥 INFIERNO',  canvas:'if-canvas',  initFn:initIF,  drawFn:drawIF},
+  void:     {cls:'t-void',     title:'vacío cósmico',       sub:'200 undecillones de energía — el cosmos se rompe',    badge:'🌀 VACÍO',     canvas:'vc-canvas',  initFn:initVC,  drawFn:drawVC},
+  crystal:  {cls:'t-crystal',  title:'mundo cristal',       sub:'800 quindecillones de energía — pureza absoluta',     badge:'💎 CRISTAL',   canvas:'cr-canvas',  initFn:initCR,  drawFn:drawCR},
+  aurora:   {cls:'t-aurora',   title:'aurora eterna',       sub:'un número sin nombre de energía',                     badge:'🌌 AURORA',    canvas:'ar-canvas',  initFn:initAR,  drawFn:drawAR},
+  solar:    {cls:'t-solar',    title:'corazón solar',       sub:'la estrella se despertó',                             badge:'☀ SOLAR',      canvas:'sl-canvas',  initFn:initSL,  drawFn:drawSL},
+  deep:     {cls:'t-deep',     title:'profundidades',       sub:'el fondo del universo',                               badge:'🔱 ABISMO',    canvas:'dp-canvas',  initFn:initDP,  drawFn:drawDP},
+};
 
-let orbSize=120, bgMode=1, currentTab='upgrades';
+// ── DOM ──────────────────────────────────────────────────────────
+const $=id=>document.getElementById(id);
+let orbSz=118, bgMode=1, curTab='u', worldActive=false;
+let comboTO=null;
 
-// ── LOADING ──────────────────────────────────────────────
-{
-  const bar=$('load-bar'), pct=$('load-pct'), DUR=13000, start=Date.now();
-  function tl(){
-    const p=Math.min((Date.now()-start)/DUR,1), v=p<.5?2*p*p:-1+(4-2*p)*p;
-    bar.style.width=Math.round(v*100)+'%'; pct.textContent=Math.round(v*100)+'%';
-    p<1?requestAnimationFrame(tl):enterGame();
+// ── ANTICHEAT v2 ─────────────────────────────────────────────────
+let acTimer=null;
+function acCheck(){
+  const now=Date.now();
+  // remove clicks older than 1 second
+  G.clickLog=G.clickLog.filter(t=>now-t<=1000);
+  const cps=G.clickLog.length;
+
+  // speed check
+  if(cps>10){acTrigger('VELOCIDAD EXCESIVA ('+cps+' CPS)');return;}
+
+  // consistency check — if 6+ clicks in window and stddev of intervals < 15ms = bot
+  if(G.clickLog.length>=6){
+    const intervals=[];
+    for(let i=1;i<G.clickLog.length;i++) intervals.push(G.clickLog[i]-G.clickLog[i-1]);
+    const mean=intervals.reduce((a,b)=>a+b,0)/intervals.length;
+    const std=Math.sqrt(intervals.reduce((a,b)=>a+(b-mean)**2,0)/intervals.length);
+    if(std<15&&mean<120){acTrigger('CONSISTENCIA INHUMANA (σ='+std.toFixed(1)+'ms)');return;}
   }
-  requestAnimationFrame(tl);
 }
 
-function enterGame(){
-  $loading.classList.add('fade-out');
-  setTimeout(()=>$loading.style.display='none',1300);
-  $game.classList.add('visible');
-  if(G.prestigeCount>0) $presB.style.display='block';
-  setOrbSize(orbSize);
-  $orbWrap.addEventListener('pointerdown',handleClick);
-  buildShop(); buildMilestoneRow(); startBgCanvas();
-  setInterval(gameTick,100);
-  requestAnimationFrame(renderLoop);
-}
-
-// ── ORB ─────────────────────────────────────────────────
-function setOrbSize(sz){
-  orbSize=Math.max(80,Math.min(sz,250));
-  $orb.style.width=orbSize+'px'; $orb.style.height=orbSize+'px';
-}
-
-// ── CLICK ────────────────────────────────────────────────
-let lastClickTime=0, comboTimeout=null;
-function handleClick(e){
-  if(G.gameOver) return;
-  const now=Date.now(); if(now-lastClickTime<22) return;
-  lastClickTime=now; G.totalClicks++;
-
-  let earned=G.clickPower*G.multiplier*G.prestigeMult;
-  const multiplyActive=()=>{
-    if(G.overchargeActive&&now<G.overchargeEnd) earned*=3;
-    if(G.frenzyActive&&now<G.frenzyEnd) earned*=8;
-    if(G.voidActive&&now<G.voidEnd) earned*=25;
-    if(G.divineActive&&now<G.divineEnd) earned*=50;
-  };
-  multiplyActive();
-
-  if(G.comboMax>1){
-    clearTimeout(comboTimeout);
-    G.comboCount=Math.min(G.comboCount+1,G.comboMax);
-    const bonus=1+(G.comboCount/G.comboMax)*2;
-    earned*=bonus;
-    if(G.comboCount>2){
-      $comboD.textContent='combo ×'+G.comboCount+' [+'+Math.round((bonus-1)*100)+'%]';
-      $comboD.classList.add('show');
+function acTrigger(reason){
+  if(G.acPermanent) return;
+  G.acBlocked=true; G.acBlockEnd=Date.now()+30000;
+  G.acWarnings++;
+  $('ac-msg').innerHTML='Motivo: <strong style="color:#ff4400">'+reason+'</strong><br>Orbe bloqueado por 30 segundos.';
+  $('ac-inf').textContent='infracciones: '+G.acWarnings+' / 3';
+  $('ac-warn').classList.add('show');
+  let cd=30;
+  $('ac-num').textContent=cd;
+  clearInterval(acTimer);
+  acTimer=setInterval(()=>{
+    cd--;$('ac-num').textContent=cd;
+    if(cd<=0){
+      clearInterval(acTimer);
+      if(G.acWarnings>=3){
+        G.acPermanent=true;
+        $('ac-msg').innerHTML='<strong style="color:#ff2200">BLOQUEO PERMANENTE</strong><br>3 infracciones detectadas.<br>Recargá la página para una nueva run.';
+        $('ac-num').textContent='∞';
+        $('ac-inf').textContent='run terminada';
+      } else {
+        G.acBlocked=false;
+        $('ac-warn').classList.remove('show');
+      }
     }
-    comboTimeout=setTimeout(()=>{G.comboCount=0;$comboD.classList.remove('show');},1600);
-  }
+  },1000);
+}
 
-  addEnergy(earned);
-  spawnClickParticles(e.clientX,e.clientY,earned);
-  $orb.classList.remove('clicked'); void $orb.offsetWidth; $orb.classList.add('clicked');
-  setTimeout(()=>$orb.classList.remove('clicked'),260);
+// ── CLICK ────────────────────────────────────────────────────────
+let lastCT=0;
+function handleClick(e){
+  if(G.gameOver||G.acBlocked||G.acPermanent)return;
+  const now=Date.now(); if(now-lastCT<18)return;
+  lastCT=now; G.clickLog.push(now); acCheck(); if(G.acBlocked)return;
+  G.clicks++;
+  let earned=G.cp*G.mult*G.pMult;
+  earned*=abilMult();
+  if(G.comboMax>1){
+    clearTimeout(comboTO); G.combo=Math.min(G.combo+1,G.comboMax);
+    const b=1+(G.combo/G.comboMax)*1.6; earned*=b;
+    if(G.combo>2){$('combo-d').textContent='combo ×'+G.combo;$('combo-d').classList.add('show');}
+    comboTO=setTimeout(()=>{G.combo=0;$('combo-d').classList.remove('show');},1400);
+  }
+  addEv(earned); spawnParticles(e.clientX,e.clientY,earned);
+  $('orb').classList.remove('clicked');void $('orb').offsetWidth;$('orb').classList.add('clicked');
+  setTimeout(()=>$('orb').classList.remove('clicked'),260);
   checkMilestones();
 }
 
-function addEnergy(amt){
-  G.energy+=amt; G.totalEarned+=amt; checkStageUp();
+function abilMult(){
+  let m=1,now=Date.now();
+  if(G.ocA&&now<G.ocE)m*=2;
+  if(G.fzA&&now<G.fzE)m*=3.5;
+  if(G.vdA&&now<G.vdE)m*=8;
+  if(G.dvA&&now<G.dvE)m*=12;
+  if(G.ifA&&now<G.ifE)m*=25;
+  if(G.vcA&&now<G.vcE)m*=40;
+  if(G.crA&&now<G.crE)m*=60;
+  if(G.srA&&now<G.srE)m*=90;
+  return m;
 }
 
-function checkStageUp(){
-  for(const [n,cfg] of Object.entries(STAGES)){
-    const sn=+n;
-    if(G.stage<sn && G.totalEarned>=cfg.thresh && cfg.thresh>0){ setStage(sn); break; }
+function addEv(a){G.ev+=a;G.tot+=a;checkStage();checkWorlds();}
+
+function checkStage(){
+  for(const[k,v]of Object.entries(STAGES)){
+    if(G.stage<+k&&G.tot>=v.t&&v.t>0){setStage(+k);break;}
+  }
+}
+function setStage(n){
+  G.stage=n;$('st-name').textContent=STAGES[n].n;
+  bgMode=n<=3?n:n<=6?4:n<=10?5:n<=18?6:7;
+  buildShop();buildMsRow();showToast('✦ etapa '+n+' — '+STAGES[n].n.toLowerCase());flash();
+}
+
+function checkWorlds(){
+  for(const[k,v]of Object.entries(G.wThresh)){
+    if(!G.worldsUnlocked[k]&&G.tot>=v){G.worldsUnlocked[k]=true;triggerWorld(k);}
   }
 }
 
-function setStage(n){
-  G.stage=n;
-  const cfg=STAGES[n];
-  $sSel.textContent=cfg.name;
-  bgMode=cfg.bgMode;
-  buildShop(); buildMilestoneRow();
-  showToast('✦ etapa '+n+' — '+cfg.name.toLowerCase());
-  flashScreen(false);
-  // check heaven
-  if(n>=7 && !G.heavenMode) triggerHeaven();
-}
-
-// ── HEAVEN TRIGGER ───────────────────────────────────────
-function triggerHeaven(){
-  G.heavenMode=true;
-  // fade in heaven
-  $heavenOv.style.opacity='1';
+// ── WORLD TRANSITION ─────────────────────────────────────────────
+let activeDrawFns={};
+function triggerWorld(key){
+  const wd=WORLDS[key]; if(!wd)return;
+  G.world=key;
+  const tr=$('tr-scr');
+  tr.className='show'; tr.style.background=''; // reset
+  $('tr-t').textContent=wd.title; $('tr-t').style.color='var(--at)';
+  $('tr-s').textContent=wd.sub; $('tr-s').style.color='var(--ac)';
+  // set bg color of transition
+  const trBgs={heaven:'radial-gradient(circle,#d8f0ff,#8ec8ee)',wasteland:'radial-gradient(circle,#1a1008,#0a0600)',inferno:'radial-gradient(circle,#200000,#0a0000)',void:'radial-gradient(circle,#000012,#000005)',crystal:'radial-gradient(circle,#001818,#000a0a)',aurora:'radial-gradient(circle,#00060f,#000308)',solar:'radial-gradient(circle,#1a0800,#0a0300)',deep:'radial-gradient(circle,#000208,#000104)'};
+  tr.style.background=trBgs[key]||'#000';
   setTimeout(()=>{
-    document.body.classList.add('heaven');
-    $heavenLabel.classList.add('show');
-    setTimeout(()=>$heavenLabel.classList.remove('show'),3500);
-    $orb.classList.add('heaven-pulse');
-    startHeavenCanvas();
-    showToast('✦ bienvenido al cielo — ascensión iniciada');
+    document.body.className=wd.cls;
+    const bw=$('world-badge-wrap'); bw.innerHTML='';
+    const bd=document.createElement('div'); bd.className='hbadge'; bd.textContent=wd.badge; bw.appendChild(bd);
+    // init + show canvas
+    const c=$(wd.canvas); c.width=window.innerWidth; c.height=window.innerHeight;
+    if(!activeDrawFns[key]){wd.initFn(c);activeDrawFns[key]=true;wd.drawFn(c);}
+    c.classList.add('show');
+    showToast('✦ '+wd.title+' desbloqueado');
+    setTimeout(()=>tr.classList.remove('show'),2500);
   },2000);
 }
 
-// ── GAME TICK ────────────────────────────────────────────
+// ── GAME TICK ────────────────────────────────────────────────────
 let lastTick=Date.now();
 function gameTick(){
-  if(G.gameOver) return;
-  const now=Date.now(), dt=(now-lastTick)/1000; lastTick=now;
-
-  if(G.autoClickers>0){
-    let gen=G.autoClickers*dt*G.multiplier*G.prestigeMult;
-    if(G.overchargeActive&&now<G.overchargeEnd) gen*=3;
-    if(G.frenzyActive&&now<G.frenzyEnd) gen*=8;
-    if(G.voidActive&&now<G.voidEnd) gen*=25;
-    if(G.divineActive&&now<G.divineEnd) gen*=50;
-    addEnergy(gen);
-  }
-
-  // ability expiry
-  if(G.overchargeActive&&now>=G.overchargeEnd){G.overchargeActive=false;$orb.classList.remove('overcharge-active');}
-  if(G.frenzyActive&&now>=G.frenzyEnd){G.frenzyActive=false;$orb.classList.remove('frenzy-active');}
-  if(G.voidActive&&now>=G.voidEnd) G.voidActive=false;
-  if(G.divineActive&&now>=G.divineEnd) G.divineActive=false;
-
+  if(G.gameOver)return;
+  const now=Date.now(),dt=(now-lastTick)/1000;lastTick=now;
+  if(G.auto>0){addEv(G.auto*dt*G.mult*G.pMult*abilMult());}
+  // expire abilities
+  const exp=[[G.ocA,'ocA',G.ocE,'oc-a'],[G.fzA,'fzA',G.fzE,'fz-a']];
+  exp.forEach(([a,k,e,cls])=>{if(a&&now>=e){G[k]=false;$('orb').classList.remove(cls);}});
+  if(G.vdA&&now>=G.vdE)G.vdA=false;
+  if(G.dvA&&now>=G.dvE)G.dvA=false;
+  if(G.ifA&&now>=G.ifE)G.ifA=false;
+  if(G.vcA&&now>=G.vcE)G.vcA=false;
+  if(G.crA&&now>=G.crE)G.crA=false;
+  if(G.srA&&now>=G.srE)G.srA=false;
   // passives
-  if(G.echoAvail){G.echoTimer+=100; if(G.echoTimer>=12000){G.echoTimer=0;triggerEcho();}}
-  if(G.bloomAvail){G.bloomTimer+=100; if(G.bloomTimer>=40000){G.bloomTimer=0;triggerBloom();}}
-  if(G.pulseChainAvail){G.pulseChainTimer+=100; if(G.pulseChainTimer>=20000){G.pulseChainTimer=0;triggerPulseChain();}}
-  if(G.novaAvail){G.novaTimer+=100; if(G.novaTimer>=60000){G.novaTimer=0;triggerNova();}}
-  if(G.harmonicsAvail){G.harmonicsTimer+=100; if(G.harmonicsTimer>=10000){G.harmonicsTimer=0;triggerHarmonics();}}
-
-  // cooldowns
-  updateCooldownBars(now);
+  passive('echoA','echoT',18000,triggerEcho);
+  passive('bloomA','bloomT',55000,triggerBloom);
+  passive('pchainA','pchainT',28000,triggerPchain);
+  passive('novaA','novaT',80000,triggerNova);
+  passive('harmA','harmT',14000,triggerHarm);
+  passive('soulA','soulT',9000,triggerSoul);
+  passive('vortexA','vortexT',6000,triggerVortex);
+  passive('sunA','sunT',7000,triggerSun);
+  passive('abyssA','abyssT',7000,triggerAbyss);
+  updateCDs(now);
   checkMilestones();
-
-  // end check
-  const fill=Math.min(G.totalEarned/G.endThreshold,1);
-  if(fill>=1&&!G.gameOver) triggerEnd();
-
+  if(G.tot>=G.endT&&!G.gameOver)triggerEnd();
   updateUI();
 }
+function passive(aKey,tKey,interval,fn){if(!G[aKey])return;G[tKey]+=100;if(G[tKey]>=interval){G[tKey]=0;fn();}}
 
 function renderLoop(){if(!G.gameOver){drawBg();requestAnimationFrame(renderLoop);}}
 
-// ── UI ───────────────────────────────────────────────────
+// ── UI ───────────────────────────────────────────────────────────
 function updateUI(){
-  $energy.textContent=fmtE(G.energy);
-  $total.textContent=fmtE(G.totalEarned);
-  $clicksD.textContent=fmtE(G.totalClicks);
-  const eps=G.autoClickers*G.multiplier*G.prestigeMult;
-  $epsD.textContent=fmtE(eps)+' ev/s';
-  $epsHdr.textContent=fmtE(eps)+'/s';
-  $cpsV.textContent=fmtE(G.clickPower*G.multiplier*G.prestigeMult);
-  $multV.textContent='×'+fmtE(G.multiplier);
-  $autoV.textContent=fmtE(G.autoClickers);
-  $presV.textContent='×'+G.prestigeMult.toFixed(2);
+  $('h-ev').textContent=fe(G.ev);
+  $('h-tot').textContent=fe(G.tot);
+  $('h-clk').textContent=fe(G.clicks);
+  const eps=G.auto*G.mult*G.pMult;
+  $('h-eps').textContent=fe(eps)+'/s';
+  $('eps-d').textContent=fe(eps)+' ev/s';
+  $('h-mult').textContent='×'+fe(G.mult*G.pMult);
+  $('ss-cps').textContent=fe(G.cp*G.mult*G.pMult);
+  $('ss-mult').textContent='×'+fe(G.mult);
+  $('ss-auto').textContent=fe(G.auto);
+  $('ss-pres').textContent='×'+G.pMult.toFixed(2);
 
-  const fill=Math.min(G.totalEarned/G.endThreshold*100,100);
-  $progF.style.width=fill+'%'; $progPct.textContent=fill.toFixed(3)+'%';
-  $fillRing.style.setProperty('--fill',fill);
+  const fill=Math.min(G.tot/G.endT*100,100);
+  $('prog-fill').style.width=fill+'%';
+  $('fill-ring').style.setProperty('--fill',fill);
 
-  // heaven progress label
-  if(!G.heavenMode && G.totalEarned>=5e9){
-    const hpct=Math.min(G.totalEarned/5e10*100,100).toFixed(1);
-    $progLabel.innerHTML='PULSO VITAL — <span id="prog-pct">'+fill.toFixed(3)+'%</span> | cielo: '+hpct+'%';
-  }
+  // progress label with next world
+  let nextW='';
+  const wOrder=['heaven','wasteland','inferno','void','crystal','aurora','solar','deep'];
+  for(const w of wOrder){if(!G.worldsUnlocked[w]){nextW=' | próx: '+fe(G.wThresh[w]);break;}}
+  $('prog-lbl').textContent='PULSO VITAL '+fill.toFixed(5)+'%'+nextW;
 
+  // ability timer text
   const now=Date.now();
-  let timerText='';
-  if(G.divineActive&&now<G.divineEnd) timerText='✦ divino '+(((G.divineEnd-now)/1000).toFixed(1))+'s';
-  else if(G.frenzyActive&&now<G.frenzyEnd) timerText='🔥 frenesí '+(((G.frenzyEnd-now)/1000).toFixed(1))+'s';
-  else if(G.voidActive&&now<G.voidEnd) timerText='◆ vacío '+(((G.voidEnd-now)/1000).toFixed(1))+'s';
-  else if(G.overchargeActive&&now<G.overchargeEnd) timerText='⚡ sobrecarga '+(((G.overchargeEnd-now)/1000).toFixed(1))+'s';
-  $ocTimer.textContent=timerText; timerText?$ocTimer.classList.add('show'):$ocTimer.classList.remove('show');
+  const ats=[
+    [G.srA,G.srE,'☀ solar'],
+    [G.crA,G.crE,'💎 cristal'],
+    [G.vcA,G.vcE,'🌀 vacío'],
+    [G.ifA,G.ifE,'🔥 furia'],
+    [G.dvA,G.dvE,'✦ divino'],
+    [G.vdA,G.vdE,'◆ drenaje'],
+    [G.fzA,G.fzE,'🔥 frenesí'],
+    [G.ocA,G.ocE,'⚡ sobrecarga'],
+  ];
+  let tt='';
+  for(const[a,e,label]of ats){if(a&&now<e){tt=label+' '+((e-now)/1000).toFixed(1)+'s';break;}}
+  $('oc-t').textContent=tt;tt?$('oc-t').classList.add('show'):$('oc-t').classList.remove('show');
 
   // shop cost refresh
-  document.querySelectorAll('.upgrade').forEach(el=>{
-    const id=el.dataset.id, upg=UPGRADES.find(u=>u.id===id); if(!upg) return;
-    const owned=G.upgrades[id]||0, cost=getUpgCost(upg);
-    if(owned>=upg.max){el.className='upgrade maxed';return;}
-    if(upg.s>G.stage){el.className='upgrade locked';return;}
-    el.className='upgrade'+(G.energy>=cost?' affordable':' cant-afford');
-    el.querySelector('.upg-cost').textContent=fmtE(cost)+' ev';
-    el.querySelector('.upg-owned').textContent=owned+'/'+upg.max;
+  document.querySelectorAll('.upg').forEach(el=>{
+    const id=el.dataset.id,upg=UPGRADES.find(u=>u.id===id);if(!upg)return;
+    const own=G.upgrades[id]||0,cost=upgCost(upg);
+    if(own>=upg.mx){el.className='upg mx';return;}
+    if(upg.s>G.stage){el.className='upg lk';return;}
+    el.className='upg'+(G.ev>=cost?' aff':' ca');
+    el.querySelector('.upg-cost').textContent=fe(cost)+' ev';
+    el.querySelector('.upg-own').textContent=own+'/'+upg.mx;
   });
 }
 
-function updateCooldownBars(now){
-  const pairs=[
-    {id:'btn-oc', cd:G.ocCooldown, end:G.ocCooldownEnd, dur:30000, clr:()=>G.ocCooldown=false},
-    {id:'btn-fz', cd:G.frenzyCD,   end:G.frenzyEnd+90000, dur:90000, clr:()=>G.frenzyCD=false},
-    {id:'btn-vd', cd:G.voidCD,     end:G.voidEnd+120000, dur:120000, clr:()=>G.voidCD=false},
-    {id:'btn-dv', cd:G.divineCD,   end:G.divineEnd+180000,dur:180000, clr:()=>G.divineCD=false},
+function updateCDs(now){
+  const cdDefs=[
+    {id:'btn-oc',cd:'ocCD',e:'ocCDE',dur:60000,clr:()=>G.ocCD=false},
+    {id:'btn-fz',cd:'fzCD',e:'fzCDE',dur:150000,clr:()=>G.fzCD=false},
+    {id:'btn-vd',cd:'vdCD',e:'vdCDE',dur:180000,clr:()=>G.vdCD=false},
+    {id:'btn-dv',cd:'dvCD',e:'dvCDE',dur:300000,clr:()=>G.dvCD=false},
+    {id:'btn-if',cd:'ifCD',e:'ifCDE',dur:360000,clr:()=>G.ifCD=false},
+    {id:'btn-vc',cd:'vcCD',e:'vcCDE',dur:480000,clr:()=>G.vcCD=false},
+    {id:'btn-cr',cd:'crCD',e:'crCDE',dur:600000,clr:()=>G.crCD=false},
+    {id:'btn-sr',cd:'srCD',e:'srCDE',dur:720000,clr:()=>G.srCD=false},
   ];
-  pairs.forEach(p=>{
-    const btn=$(p.id); if(!btn||!p.cd) return;
-    const rem=Math.max(0,p.end-now), pct=(1-rem/p.dur)*100;
-    const bar=btn.querySelector('.ability-cd'); if(bar) bar.style.width=pct+'%';
-    if(now>=p.end){p.clr();btn.disabled=false;if(bar)bar.style.width='100%';}
+  cdDefs.forEach(d=>{
+    if(!G[d.cd])return;
+    const btn=$(d.id);if(!btn)return;
+    const rem=Math.max(0,G[d.e]-now),pct=(1-rem/d.dur)*100;
+    const bar=btn.querySelector('.acd');if(bar)bar.style.width=pct+'%';
+    if(now>=G[d.e]){d.clr();btn.disabled=false;if(bar)bar.style.width='100%';}
   });
 }
 
-// ── SHOP ─────────────────────────────────────────────────
-function switchTab(tab){
-  currentTab=tab;
-  document.querySelectorAll('.shop-tab').forEach(t=>{
-    t.classList.toggle('active', (tab==='upgrades'&&t.textContent.includes('mejoras'))||(tab==='milestones'&&t.textContent.includes('logros')));
-  });
+// ── SHOP ─────────────────────────────────────────────────────────
+function switchTab(t){
+  curTab=t;
+  document.querySelectorAll('.stab').forEach(el=>{el.classList.toggle('act',(t==='u'&&el.textContent==='mejoras')||(t!=='u'&&el.textContent==='logros'));});
   buildShop();
 }
-
-function buildShop(){
-  $shopList.innerHTML='';
-  currentTab==='upgrades'?buildUpgradesTab():buildMilestonesTab();
-}
-
-const stageTags={1:'germinación',2:'crecimiento',3:'floración',4:'sobrecarga',5:'colapso',6:'singularidad',7:'ascensión'};
-function buildUpgradesTab(){
+function buildShop(){$('shp-list').innerHTML='';curTab==='u'?buildUpgTab():buildMsTab();}
+function buildUpgTab(){
   UPGRADES.forEach(upg=>{
-    const el=document.createElement('div'); el.className='upgrade'; el.dataset.id=upg.id;
-    const owned=G.upgrades[upg.id]||0, cost=getUpgCost(upg);
-    const locked=upg.s>G.stage||owned>=upg.max;
-    el.innerHTML=`<div class="upg-tag s${upg.s}">${stageTags[upg.s]}</div>
-      <div class="upg-name">${upg.name}</div>
-      <div class="upg-desc">${upg.desc}</div>
-      <div class="upg-footer"><div class="upg-cost">${fmtE(cost)} ev</div><div class="upg-owned">${owned}/${upg.max}</div></div>`;
-    if(owned>=upg.max) el.classList.add('maxed');
-    else if(locked) el.classList.add('locked');
-    else if(G.energy<cost) el.classList.add('cant-afford');
-    else el.classList.add('affordable');
-    el.addEventListener('click',()=>buyUpgrade(upg.id));
-    $shopList.appendChild(el);
+    const el=document.createElement('div');el.className='upg';el.dataset.id=upg.id;
+    const own=G.upgrades[upg.id]||0,cost=upgCost(upg),lk=upg.s>G.stage||own>=upg.mx;
+    el.innerHTML=`<div class="utag">etapa ${upg.s} — ${STAGES[upg.s]?STAGES[upg.s].n.toLowerCase():'?'}</div>
+      <div class="upg-name">${upg.n}</div><div class="upg-desc">${upg.d}</div>
+      <div class="upg-foot"><div class="upg-cost">${fe(cost)} ev</div><div class="upg-own">${own}/${upg.mx}</div></div>`;
+    if(own>=upg.mx)el.classList.add('mx');
+    else if(lk)el.classList.add('lk');
+    else if(G.ev<cost)el.classList.add('ca');
+    else el.classList.add('aff');
+    el.addEventListener('click',()=>buyUpg(upg.id));
+    $('shp-list').appendChild(el);
   });
 }
-
-function buildMilestonesTab(){
+function buildMsTab(){
   MILESTONES.forEach(ms=>{
-    const done=!!G.milestones[ms.id], el=document.createElement('div');
-    el.className='milestone-card'+(done?' done':'');
-    el.innerHTML=`<div class="ms-icon">${ms.icon}</div>
-      <div class="ms-info">
-        <div class="ms-name">${ms.name}</div>
-        <div class="ms-desc">${ms.desc}</div>
-        <div class="ms-reward">${ms.rt}</div>
-      </div>${done?'<div class="ms-check">✓</div>':''}`;
-    $shopList.appendChild(el);
+    const done=!!G.milestones[ms.id],el=document.createElement('div');
+    el.className='ms-card'+(done?' done':'');
+    el.innerHTML=`<div class="ms-ico">${ms.i}</div><div class="ms-inf"><div class="ms-name">${ms.n}</div><div class="ms-desc">${ms.d}</div><div class="ms-rew">${ms.rt}</div></div>${done?'<div class="ms-chk">✓</div>':''}`;
+    $('shp-list').appendChild(el);
   });
 }
-
-function buildMilestoneRow(){
-  $msRow.innerHTML='';
-  MILESTONES.slice(0,14).forEach(ms=>{
-    const pip=document.createElement('div');
-    pip.className='ms-pip'+(G.milestones[ms.id]?' done':'');
-    $msRow.appendChild(pip);
-  });
+function buildMsRow(){
+  $('ms-row').innerHTML='';
+  MILESTONES.slice(0,20).forEach(ms=>{const pip=document.createElement('div');pip.className='ms-pip'+(G.milestones[ms.id]?' done':'');$('ms-row').appendChild(pip);});
 }
-
-function getUpgCost(upg){return Math.round(upg.cost*Math.pow(upg.sc,G.upgrades[upg.id]||0));}
-
-function buyUpgrade(id){
-  const upg=UPGRADES.find(u=>u.id===id); if(!upg) return;
-  const owned=G.upgrades[id]||0;
-  if(owned>=upg.max||upg.s>G.stage) return;
-  const cost=getUpgCost(upg); if(G.energy<cost) return;
-  G.energy-=cost; G.upgrades[id]=(owned+1);
-  switch(upg.fx){
-    case 'mult':       G.multiplier*=upg.v; break;
-    case 'auto':       G.autoClickers+=upg.v; break;
-    case 'size':       setOrbSize(orbSize+upg.v); break;
-    case 'click':      G.clickPower+=upg.v; break;
-    case 'combo':      G.comboMax=25; showToast('◎ combo activado'); break;
-    case 'overcharge': G.overchargeAvail=true; addAbilBtn('oc','⚡ sobrecarga','oc-btn',triggerOvercharge); showToast('⚡ sobrecarga desbloqueada'); break;
-    case 'frenzy':     G.frenzyAvail=true;     addAbilBtn('fz','🔥 frenesí','fz-btn',triggerFrenzy);   showToast('🔥 frenesí desbloqueado'); break;
-    case 'void':       G.voidAvail=true;        addAbilBtn('vd','◆ vacío','vd-btn',triggerVoid);        showToast('◆ vacío desbloqueado'); break;
-    case 'divine':     G.divineAvail=true;      addAbilBtn('dv','✦ divino','hv-btn',triggerDivine);     showToast('✦ intervención divina desbloqueada'); break;
-    case 'echo':       G.echoAvail=true;        showToast('◎ eco de pulso activado'); break;
-    case 'bloom':      G.bloomAvail=true;       showToast('✿ floración cuántica activada'); break;
-    case 'pchain':     G.pulseChainAvail=true;  showToast('✦ pulse chain activado'); break;
-    case 'nova':       G.novaAvail=true;        showToast('★ nova orgánica activada'); break;
-    case 'harm':       G.harmonicsAvail=true;   showToast('◈ armónicos activados'); break;
+function upgCost(upg){return upg.c*Math.pow(upg.sc,G.upgrades[upg.id]||0);}
+function buyUpg(id){
+  const upg=UPGRADES.find(u=>u.id===id);if(!upg)return;
+  const own=G.upgrades[id]||0;if(own>=upg.mx||upg.s>G.stage)return;
+  const cost=upgCost(upg);if(G.ev<cost)return;
+  G.ev-=cost;G.upgrades[id]=(own+1);
+  switch(upg.f){
+    case 'mult':  G.mult*=upg.v;break;
+    case 'auto':  G.auto+=upg.v;break;
+    case 'size':  setOrb(orbSz+upg.v);break;
+    case 'click': G.cp+=upg.v;break;
+    case 'combo': G.comboMax=22;showToast('◎ combo activado');break;
+    case 'echo':  G.echoA=true;showToast('◎ eco de pulso activado');break;
+    case 'bloom': G.bloomA=true;showToast('✿ floración activada');break;
+    case 'pch':   G.pchainA=true;showToast('✦ pulse chain activado');break;
+    case 'nova':  G.novaA=true;showToast('★ nova activada');break;
+    case 'harm':  G.harmA=true;showToast('◈ armónicos activados');break;
+    case 'soul':  G.soulA=true;showToast('☠ drenar almas activado');break;
+    case 'vort':  G.vortexA=true;showToast('🌀 vórtice cuántico activado');break;
+    case 'abyss': G.abyssA=true;showToast('🔱 abismo activado');break;
+    case 'oc':  G.ocA=false;addAbil('btn-oc','⚡ sobrecarga','ab-oc',doOC);showToast('⚡ sobrecarga desbloqueada');break;
+    case 'fz':  G.fzA=false;addAbil('btn-fz','🔥 frenesí','ab-fz',doFZ);showToast('🔥 frenesí desbloqueado');break;
+    case 'vd':  G.vdA=false;addAbil('btn-vd','◆ vacío','ab-vd',doVD);showToast('◆ drenaje del vacío desbloqueado');break;
+    case 'dv':  G.dvA=false;addAbil('btn-dv','✦ divino','ab-dv',doDV);showToast('✦ intervención divina desbloqueada');break;
+    case 'if':  G.ifA=false;addAbil('btn-if','🔥 furia','ab-if',doIF);showToast('🔥 furia infernal desbloqueada');break;
+    case 'vc':  G.vcA=false;addAbil('btn-vc','🌀 vacío cos','ab-vc',doVC);showToast('🌀 vacío cósmico desbloqueado');break;
+    case 'cr':  G.crA=false;addAbil('btn-cr','💎 cristal','ab-cr',doCR);showToast('💎 resonancia cristal desbloqueada');break;
+    case 'sr':  G.srA=false;addAbil('btn-sr','☀ solar','ab-sr',doSR);showToast('☀ pulso solar desbloqueado');break;
   }
   buildShop();
 }
 
-// ── ABILITY BUTTONS ──────────────────────────────────────
-function addAbilBtn(type,label,cls,fn){
-  if($('btn-'+type)) return;
-  const btn=document.createElement('button');
-  btn.id='btn-'+type; btn.className='ability-btn '+cls;
-  btn.innerHTML=label+'<div class="ability-cd" style="width:0%"></div>';
-  btn.addEventListener('click',fn); $abilBar.appendChild(btn);
+// ── ABILITIES ────────────────────────────────────────────────────
+function addAbil(id,label,cls,fn){
+  if($(id))return;
+  const btn=document.createElement('button');btn.id=id;btn.className='abil-btn '+cls;
+  btn.innerHTML=label+'<div class="acd" style="width:0%"></div>';
+  btn.addEventListener('click',fn);$('abil-bar').appendChild(btn);
 }
+function cdBtn(id){const b=$(id);if(b){b.disabled=true;const bar=b.querySelector('.acd');if(bar)bar.style.width='0%';}}
 
-// ── ABILITIES ────────────────────────────────────────────
-function triggerOvercharge(){
-  if(G.ocCooldown||G.overchargeActive) return;
-  G.overchargeActive=true; G.overchargeEnd=Date.now()+6000;
-  G.ocCooldown=true; G.ocCooldownEnd=Date.now()+30000;
-  $orb.classList.add('overcharge-active');
-  const b=$('btn-oc'); if(b){b.disabled=true; b.querySelector('.ability-cd').style.width='0%';}
-  showToast('⚡ sobrecarga — ×3 por 6s'); flashScreen(false);
-  setTimeout(()=>$orb.classList.remove('overcharge-active'),6000);
-}
+function doOC(){if(G.ocCD||G.ocA)return;G.ocA=true;G.ocE=Date.now()+8000;G.ocCD=true;G.ocCDE=Date.now()+60000;$('orb').classList.add('oc-a');cdBtn('btn-oc');showToast('⚡ ×2 — 8s');flash();setTimeout(()=>$('orb').classList.remove('oc-a'),8000);}
+function doFZ(){if(G.fzCD||G.fzA)return;G.fzA=true;G.fzE=Date.now()+10000;G.fzCD=true;G.fzCDE=Date.now()+150000;$('orb').classList.add('fz-a');cdBtn('btn-fz');showToast('🔥 ×3.5 — 10s');flash();setTimeout(()=>$('orb').classList.remove('fz-a'),10000);}
+function doVD(){if(G.vdCD||G.vdA)return;G.vdA=true;G.vdE=Date.now()+15000;G.vdCD=true;G.vdCDE=Date.now()+180000;cdBtn('btn-vd');showToast('◆ ×8 — 15s');flash();}
+function doDV(){if(G.dvCD||G.dvA)return;G.dvA=true;G.dvE=Date.now()+22000;G.dvCD=true;G.dvCDE=Date.now()+300000;cdBtn('btn-dv');showToast('✦ ×12 — 22s');flash();}
+function doIF(){if(G.ifCD||G.ifA)return;G.ifA=true;G.ifE=Date.now()+25000;G.ifCD=true;G.ifCDE=Date.now()+360000;cdBtn('btn-if');showToast('🔥 ×25 — 25s');flash();}
+function doVC(){if(G.vcCD||G.vcA)return;G.vcA=true;G.vcE=Date.now()+30000;G.vcCD=true;G.vcCDE=Date.now()+480000;cdBtn('btn-vc');showToast('🌀 ×40 — 30s');flash();}
+function doCR(){if(G.crCD||G.crA)return;G.crA=true;G.crE=Date.now()+35000;G.crCD=true;G.crCDE=Date.now()+600000;cdBtn('btn-cr');showToast('💎 ×60 — 35s');flash();}
+function doSR(){if(G.srCD||G.srA)return;G.srA=true;G.srE=Date.now()+40000;G.srCD=true;G.srCDE=Date.now()+720000;cdBtn('btn-sr');showToast('☀ ×90 — 40s');flash();}
 
-function triggerFrenzy(){
-  if(G.frenzyCD||G.frenzyActive) return;
-  G.frenzyActive=true; G.frenzyEnd=Date.now()+8000;
-  G.frenzyCD=true;
-  $orb.classList.add('frenzy-active');
-  const b=$('btn-fz'); if(b){b.disabled=true; b.querySelector('.ability-cd').style.width='0%';}
-  showToast('🔥 frenesí — ×8 por 8s'); flashScreen(false);
-  setTimeout(()=>$orb.classList.remove('frenzy-active'),8000);
-}
+// ── PASSIVES ─────────────────────────────────────────────────────
+function triggerEcho(){const e=G.cp*G.mult*G.pMult*10;addEv(e);spawnParticles(window.innerWidth/2,window.innerHeight/2,e);}
+function triggerBloom(){const e=G.auto*45*G.mult*G.pMult;addEv(e);showToast('✿ floración +'+fe(e));flash();ringBurst(8);}
+function triggerPchain(){const e=G.auto*12*G.mult*G.pMult;addEv(e);showToast('✦ pulse chain +'+fe(e));ringBurst(6);}
+function triggerNova(){const e=G.auto*130*G.mult*G.pMult;addEv(e);showToast('★ nova +'+fe(e));flash();ringBurst(12);}
+function triggerHarm(){addEv(G.tot*.0002*G.mult);}
+function triggerSoul(){addEv(G.auto*20*G.mult*G.pMult);}
+function triggerVortex(){const e=G.auto*50*G.mult*G.pMult;addEv(e);}
+function triggerSun(){const e=G.auto*35*G.mult*G.pMult;addEv(e);}
+function triggerAbyss(){const e=G.auto*80*G.mult*G.pMult;addEv(e);}
 
-function triggerVoid(){
-  if(G.voidCD||G.voidActive) return;
-  G.voidActive=true; G.voidEnd=Date.now()+12000;
-  G.voidCD=true;
-  const b=$('btn-vd'); if(b){b.disabled=true; b.querySelector('.ability-cd').style.width='0%';}
-  showToast('◆ vacío — ×25 por 12s'); flashScreen(false);
-}
-
-function triggerDivine(){
-  if(G.divineCD||G.divineActive) return;
-  G.divineActive=true; G.divineEnd=Date.now()+15000;
-  G.divineCD=true;
-  const b=$('btn-dv'); if(b){b.disabled=true; b.querySelector('.ability-cd').style.width='0%';}
-  showToast('✦ intervención divina — ×50 por 15s'); flashScreen(true);
-}
-
-// ── PASSIVES ─────────────────────────────────────────────
-function triggerEcho(){
-  const e=G.clickPower*G.multiplier*G.prestigeMult*15; addEnergy(e);
-  showToast('◎ eco +'+fmtE(e)+' ev');
-  spawnClickParticles(window.innerWidth/2,window.innerHeight/2,e);
-}
-function triggerBloom(){
-  const e=G.autoClickers*40*G.multiplier*G.prestigeMult; addEnergy(e);
-  showToast('✿ floración +'+fmtE(e)+' ev'); flashScreen(false); ringBurst(8,'#a8ffad');
-}
-function triggerPulseChain(){
-  const e=G.autoClickers*10*G.multiplier*G.prestigeMult; addEnergy(e);
-  showToast('✦ pulse chain +'+fmtE(e)+' ev'); ringBurst(6,G.heavenMode?'gold':'#22a02a');
-}
-function triggerNova(){
-  const e=G.autoClickers*120*G.multiplier*G.prestigeMult; addEnergy(e);
-  showToast('★ nova +'+fmtE(e)+' ev'); flashScreen(false); ringBurst(12,'#5eff68');
-}
-function triggerHarmonics(){
-  const e=G.totalEarned*.0005*G.multiplier; addEnergy(e);
-}
-
-function ringBurst(count,color){
-  const rect=$orb.getBoundingClientRect();
-  const cx=rect.left+rect.width/2, cy=rect.top+rect.height/2;
-  for(let i=0;i<count;i++){
-    const ring=document.createElement('div'); ring.className='pulse-ring'+(G.heavenMode?' heaven-ring':'');
-    const sz=orbSize+20+i*28; ring.style.borderColor=color;
-    ring.style.cssText+=`width:${sz}px;height:${sz}px;top:${cy-sz/2}px;left:${cx-sz/2}px;animation-delay:${i*.09}s`;
-    document.body.appendChild(ring); setTimeout(()=>ring.remove(),1000);
-  }
-}
-
-// ── MILESTONES ───────────────────────────────────────────
+// ── MILESTONES ───────────────────────────────────────────────────
 function checkMilestones(){
   MILESTONES.forEach(ms=>{
-    if(G.milestones[ms.id]) return;
-    if(ms.check()){
+    if(G.milestones[ms.id])return;
+    if(ms.c()){
       G.milestones[ms.id]=true;
-      switch(ms.rw){case 'click':G.clickPower+=ms.rv;break;case 'mult':if(ms.rv>1)G.multiplier*=ms.rv;break;case 'auto':G.autoClickers+=ms.rv;break;}
-      showToast('★ '+ms.name+' — '+ms.rt);
-      buildMilestoneRow(); if(currentTab==='milestones') buildShop();
+      switch(ms.r){case 'cp':G.cp+=ms.rv;break;case 'm':if(ms.rv>1)G.mult*=ms.rv;break;case 'a':G.auto+=ms.rv;break;}
+      showToast('★ '+ms.n+' — '+ms.rt);
+      buildMsRow();if(curTab==='m')buildShop();
     }
   });
 }
 
-// ── END ──────────────────────────────────────────────────
+// ── ORB ─────────────────────────────────────────────────────────
+function setOrb(sz){orbSz=Math.max(80,Math.min(sz,260));$('orb').style.width=orbSz+'px';$('orb').style.height=orbSz+'px';}
+
+// ── END ─────────────────────────────────────────────────────────
 function triggerEnd(){
   G.gameOver=true;
-  const elapsed=Math.floor((Date.now()-G.startTime)/1000);
-  $('end-total').textContent=fmtE(G.totalEarned);
-  $('end-clicks').textContent=fmtE(G.totalClicks);
-  $('end-time').textContent=Math.floor(elapsed/60)+'m '+elapsed%60+'s';
-  const nm=(G.prestigeMult*1.5).toFixed(2);
-  $('prestige-mult-btn').textContent=nm;
-  $('prestige-bonus-txt').textContent='prestige ×'+nm+' permanente (tienes '+G.prestigeCount+')';
-  if(G.heavenMode){
-    $endScr.style.background='linear-gradient(180deg,#e8f6ff,#c4e8ff)';
-    $('end-title').style.color='#1a4a6b'; $('end-sub').style.color='#5a8fa8';
-    $('end-title').textContent='ascensión completa'; $('end-sub').textContent='has llegado al cielo';
-  } else {
-    $endScr.style.background='var(--g0)';
-  }
-  $endScr.classList.add('show'); startEndCanvas();
+  const el=Math.floor((Date.now()-G.startTime)/1000);
+  $('e-tot').textContent=fe(G.tot);$('e-clk').textContent=fe(G.clicks);
+  $('e-time').textContent=Math.floor(el/60)+'m '+el%60+'s';
+  const nm=(G.pMult*1.5).toFixed(2);$('pr-m').textContent=nm;
+  $('pr-txt').textContent='prestige ×'+nm+' permanente (tienes '+G.pCount+' prestige)';
+  $('end-scr').classList.add('show');startEndCanvas();
 }
+function doPrestige(){localStorage.setItem('vp_pm',(G.pMult*1.5).toFixed(4));localStorage.setItem('vp_pc',G.pCount+1);location.reload();}
+function doComplete(){$('end-scr').innerHTML=`<div class="end-t" style="font-size:2rem">run completada</div><div class="end-s">el ciclo llegó a su fin</div><button class="end-btn" onclick="location.reload()" style="margin-top:1.5rem;">reiniciar</button>`;}
 
-function doPrestige(){
-  localStorage.setItem('vp_prestige',(G.prestigeMult*1.5).toFixed(4));
-  localStorage.setItem('vp_prestige_n',G.prestigeCount+1);
-  location.reload();
-}
-function doComplete(){
-  $endScr.innerHTML=`<div class="end-title" style="font-size:2rem;color:${G.heavenMode?'#1a4a6b':'var(--g6)'}">run completada</div><div class="end-sub" style="margin-bottom:2rem;color:${G.heavenMode?'#5a8fa8':'var(--g3)'}">el sistema volvió al silencio</div><button class="end-btn" onclick="location.reload()">reiniciar</button>`;
-}
-
-// ── PARTICLES ────────────────────────────────────────────
-function spawnClickParticles(x,y,earned){
-  const count=Math.min(3+Math.floor(Math.log10(earned+1)),14);
+// ── PARTICLES ───────────────────────────────────────────────────
+const PCOLS={green:'var(--g5)',heaven:'gold',wasteland:'#c8a876',inferno:'#ff4400',void:'#8888ff',crystal:'#00ffee',aurora:'#ff88ff',solar:'#ffcc44',deep:'#4488ff'};
+function spawnParticles(x,y,ev){
+  const col=PCOLS[G.world]||PCOLS.green;
+  const count=Math.min(3+Math.floor(Math.log10(ev+1)),14);
   for(let i=0;i<count;i++){
-    const p=document.createElement('div'); p.className='click-particle'+(G.heavenMode?' heaven-particle':'');
-    const sz=2+Math.random()*5, angle=Math.random()*Math.PI*2, dist=28+Math.random()*65;
-    p.style.cssText=`width:${sz}px;height:${sz}px;top:${y-sz/2}px;left:${x-sz/2}px;--tx:${Math.cos(angle)*dist}px;--ty:${Math.sin(angle)*dist}px;--dur:${.35+Math.random()*.45}s`;
-    document.body.appendChild(p); setTimeout(()=>p.remove(),950);
+    const p=document.createElement('div');p.className='cp';
+    const sz=2+Math.random()*5,ang=Math.random()*Math.PI*2,dist=28+Math.random()*65;
+    p.style.cssText=`background:${col};width:${sz}px;height:${sz}px;top:${y-sz/2}px;left:${x-sz/2}px;--tx:${Math.cos(ang)*dist}px;--ty:${Math.sin(ang)*dist}px;--dur:${.35+Math.random()*.45}s;position:fixed;pointer-events:none;border-radius:50%;z-index:50;animation:cpfly var(--dur) ease-out forwards;`;
+    document.body.appendChild(p);setTimeout(()=>p.remove(),950);
   }
-  const n=document.createElement('div'); n.className='click-number';
-  n.style.color=G.heavenMode?'gold':'var(--g6)';
-  n.textContent='+'+fmtE(earned); n.style.cssText+=`top:${y-18}px;left:${x+10}px;`;
-  document.body.appendChild(n); setTimeout(()=>n.remove(),960);
+  const n=document.createElement('div');n.className='cn';
+  n.style.color=col;n.textContent='+'+fe(ev);
+  n.style.cssText+=`top:${y-18}px;left:${x+10}px;`;
+  document.body.appendChild(n);setTimeout(()=>n.remove(),960);
 }
-
-function flashScreen(isHeavenly){
-  $flash.className='event-flash'+(isHeavenly?' heaven-flash':'');
-  void $flash.offsetWidth; $flash.classList.add('flash');
-  setTimeout(()=>$flash.classList.remove('flash'),160);
-}
-
-// ── BG CANVAS ────────────────────────────────────────────
-const bgCanvas=$('bg-canvas'), bgCtx=bgCanvas.getContext('2d');
-let bgParticles=[], bgRoots=[], bgTime=0;
-
-function initBgParticles(){
-  bgParticles=[];
-  for(let i=0;i<80;i++) bgParticles.push({
-    x:Math.random()*bgCanvas.width, y:Math.random()*bgCanvas.height,
-    r:.4+Math.random()*2.2, speed:.09+Math.random()*.42,
-    alpha:.05+Math.random()*.2, drift:(Math.random()-.5)*.55,
-  });
-}
-function initRoots(){
-  bgRoots=[];
-  for(let i=0;i<18;i++){
-    const cx=bgCanvas.width/2, cy=bgCanvas.height/2;
-    bgRoots.push({points:[{x:cx,y:cy}],angle:(i/18)*Math.PI*2+(Math.random()-.5)*.4,speed:.45+Math.random()*.9,wiggle:.035+Math.random()*.09,alpha:.022+Math.random()*.05,width:.45+Math.random()*1.1});
+function ringBurst(count){
+  const rect=$('orb').getBoundingClientRect(),cx=rect.left+rect.width/2,cy=rect.top+rect.height/2;
+  const col=PCOLS[G.world]||PCOLS.green;
+  for(let i=0;i<count;i++){
+    const r=document.createElement('div');r.className='pring';
+    const sz=orbSz+20+i*30;r.style.borderColor=col;
+    r.style.cssText+=`border:2px solid ${col};width:${sz}px;height:${sz}px;top:${cy-sz/2}px;left:${cx-sz/2}px;animation-delay:${i*.09}s`;
+    document.body.appendChild(r);setTimeout(()=>r.remove(),1000);
   }
 }
+function flash(){
+  const bg={green:'rgba(0,255,68,.04)',heaven:'rgba(255,215,0,.07)',wasteland:'rgba(139,105,20,.07)',inferno:'rgba(255,68,0,.07)',void:'rgba(100,100,255,.07)',crystal:'rgba(0,255,238,.07)',aurora:'rgba(255,128,255,.07)',solar:'rgba(255,200,50,.07)',deep:'rgba(68,136,255,.07)'}[G.world]||'rgba(0,255,68,.04)';
+  $('eflash').style.background=bg;void $('eflash').offsetWidth;$('eflash').classList.add('fl');setTimeout(()=>$('eflash').classList.remove('fl'),140);
+}
+
+// ── BG CANVAS ────────────────────────────────────────────────────
+const bgC=$('bg-canvas'),bgCtx=bgC.getContext('2d');
+let bgPts=[],bgRts=[],bgT=0;
 function startBgCanvas(){
-  bgCanvas.width=window.innerWidth; bgCanvas.height=window.innerHeight;
-  initBgParticles(); initRoots();
-  window.addEventListener('resize',()=>{bgCanvas.width=window.innerWidth;bgCanvas.height=window.innerHeight;initBgParticles();initRoots();});
+  bgC.width=window.innerWidth;bgC.height=window.innerHeight;
+  initBgPts();initBgRts();
+  window.addEventListener('resize',()=>{bgC.width=window.innerWidth;bgC.height=window.innerHeight;initBgPts();initBgRts();});
 }
+function initBgPts(){bgPts=[];for(let i=0;i<100;i++)bgPts.push({x:Math.random()*bgC.width,y:Math.random()*bgC.height,r:.4+Math.random()*2.2,s:.07+Math.random()*.38,a:.03+Math.random()*.16,d:(Math.random()-.5)*.5});}
+function initBgRts(){bgRts=[];for(let i=0;i<22;i++){const cx=bgC.width/2,cy=bgC.height/2;bgRts.push({pts:[{x:cx,y:cy}],ang:(i/22)*Math.PI*2+(Math.random()-.5)*.4,spd:.4+Math.random()*.85,w:.035+Math.random()*.09,a:.018+Math.random()*.04,wid:.4+Math.random()*1.05});}}
 function drawBg(){
-  if(G.heavenMode){drawHeavenBgSimple();return;}
-  const w=bgCanvas.width, h=bgCanvas.height;
-  bgCtx.clearRect(0,0,w,h); bgTime+=.01;
-
-  bgParticles.forEach(p=>{
-    const spd=bgMode>=4?p.speed*3:bgMode>=3?p.speed*1.8:p.speed;
-    p.y-=spd; p.x+=p.drift;
-    if(p.y<-4){p.y=h+4;p.x=Math.random()*w;} if(p.x<-4||p.x>w+4)p.x=Math.random()*w;
-    const a=bgMode>=5?p.alpha*5:bgMode>=4?p.alpha*3.5:bgMode>=3?p.alpha*2.2:bgMode>=2?p.alpha*1.4:p.alpha;
-    bgCtx.beginPath(); bgCtx.arc(p.x,p.y,p.r*(bgMode>=3?1.7:1),0,Math.PI*2);
-    bgCtx.fillStyle=bgMode>=3?`rgba(0,255,68,${a})`:`rgba(34,160,42,${a})`;
-    bgCtx.fill();
+  if(G.world!=='green'){bgCtx.clearRect(0,0,bgC.width,bgC.height);return;}
+  const w=bgC.width,h=bgC.height;bgCtx.clearRect(0,0,w,h);bgT+=.01;
+  bgPts.forEach(p=>{
+    const sp=bgMode>=6?p.s*4:bgMode>=5?p.s*2.5:bgMode>=4?p.s*1.7:p.s;
+    p.y-=sp;p.x+=p.d;if(p.y<-4){p.y=h+4;p.x=Math.random()*w;}if(p.x<-4||p.x>w+4)p.x=Math.random()*w;
+    const a=bgMode>=6?p.a*5:bgMode>=5?p.a*3:bgMode>=4?p.a*2:bgMode>=3?p.a*1.6:bgMode>=2?p.a*1.35:p.a;
+    bgCtx.beginPath();bgCtx.arc(p.x,p.y,p.r*(bgMode>=5?1.8:1),0,Math.PI*2);
+    bgCtx.fillStyle=bgMode>=4?`rgba(0,255,68,${a})`:`rgba(34,160,42,${a})`;bgCtx.fill();
   });
-
-  if(bgMode>=2) bgRoots.forEach(root=>{
-    const maxP=bgMode>=4?220:180;
-    if(root.points.length<maxP){
-      const l=root.points[root.points.length-1]; root.angle+=(Math.random()-.5)*root.wiggle;
-      root.points.push({x:l.x+Math.cos(root.angle)*root.speed,y:l.y+Math.sin(root.angle)*root.speed});
-    } else {
-      root.points.shift(); const l=root.points[root.points.length-1]; root.angle+=(Math.random()-.5)*root.wiggle;
-      root.points.push({x:l.x+Math.cos(root.angle)*root.speed,y:l.y+Math.sin(root.angle)*root.speed});
-    }
-    if(root.points.length<2) return;
-    bgCtx.beginPath(); bgCtx.moveTo(root.points[0].x,root.points[0].y);
-    for(let i=1;i<root.points.length;i++) bgCtx.lineTo(root.points[i].x,root.points[i].y);
-    const a=bgMode>=5?root.alpha*6:bgMode>=4?root.alpha*4:bgMode>=3?root.alpha*2.5:root.alpha;
-    bgCtx.strokeStyle=(bgMode>=3?`rgba(0,255,68,`:`rgba(22,92,26,`)+a+')';
-    bgCtx.lineWidth=root.width*(bgMode>=3?1.6:1); bgCtx.stroke();
+  if(bgMode>=2)bgRts.forEach(r=>{
+    const maxP=bgMode>=6?260:220;
+    if(r.pts.length<maxP){const l=r.pts[r.pts.length-1];r.ang+=(Math.random()-.5)*r.w;r.pts.push({x:l.x+Math.cos(r.ang)*r.spd,y:l.y+Math.sin(r.ang)*r.spd});}
+    else{r.pts.shift();const l=r.pts[r.pts.length-1];r.ang+=(Math.random()-.5)*r.w;r.pts.push({x:l.x+Math.cos(r.ang)*r.spd,y:l.y+Math.sin(r.ang)*r.spd});}
+    if(r.pts.length<2)return;
+    bgCtx.beginPath();bgCtx.moveTo(r.pts[0].x,r.pts[0].y);for(let i=1;i<r.pts.length;i++)bgCtx.lineTo(r.pts[i].x,r.pts[i].y);
+    const a=bgMode>=6?r.a*7:bgMode>=5?r.a*4:bgMode>=4?r.a*2.5:r.a;
+    bgCtx.strokeStyle=(bgMode>=4?'rgba(0,255,68,':'rgba(22,92,26,')+a+')';
+    bgCtx.lineWidth=r.wid*(bgMode>=4?1.6:1);bgCtx.stroke();
   });
-
-  if(bgMode>=3){
-    const cx=w/2,cy=h/2,pulse=.5+.5*Math.sin(bgTime*(bgMode>=5?8:bgMode>=4?5:3.5));
-    const gr=bgCtx.createRadialGradient(cx,cy,0,cx,cy,Math.max(w,h)*.65);
-    gr.addColorStop(0,`rgba(0,255,68,${.06*pulse})`);
-    gr.addColorStop(.5,`rgba(0,255,68,${.02*pulse})`);
-    gr.addColorStop(1,'rgba(0,255,68,0)');
-    bgCtx.fillStyle=gr; bgCtx.fillRect(0,0,w,h);
-    for(let y=0;y<h;y+=5){bgCtx.fillStyle=`rgba(0,20,5,.035)`;bgCtx.fillRect(0,y,w,1);}
-  }
-
-  if(bgMode>=4){
-    const t=bgTime*10;
-    for(let i=0;i<4;i++){
-      const sx=Math.sin(t+i*1.57)*w*.42+w/2, sy=Math.cos(t+i*1.32)*h*.32+h/2;
-      bgCtx.beginPath(); bgCtx.moveTo(w/2,h/2); bgCtx.lineTo(sx,sy);
-      bgCtx.strokeStyle=`rgba(0,255,68,${.04+Math.random()*.04})`; bgCtx.lineWidth=.6; bgCtx.stroke();
-    }
-  }
-  if(bgMode>=5){
-    const t=bgTime*4;
-    for(let i=0;i<6;i++){
-      const ax=Math.sin(t+i)*w*.45+w/2, ay=Math.cos(t*1.3+i)*h*.4+h/2;
-      bgCtx.beginPath(); bgCtx.arc(ax,ay,1.5+Math.random()*2,0,Math.PI*2);
-      bgCtx.fillStyle=`rgba(0,255,68,${.4+Math.random()*.5})`; bgCtx.fill();
-    }
-  }
+  if(bgMode>=4){const cx=w/2,cy=h/2,p=.5+.5*Math.sin(bgT*(bgMode>=6?9:4));const gr=bgCtx.createRadialGradient(cx,cy,0,cx,cy,Math.max(w,h)*.65);gr.addColorStop(0,`rgba(0,255,68,${.05*p})`);gr.addColorStop(.5,`rgba(0,255,68,${.018*p})`);gr.addColorStop(1,'rgba(0,255,68,0)');bgCtx.fillStyle=gr;bgCtx.fillRect(0,0,w,h);for(let y=0;y<h;y+=5){bgCtx.fillStyle='rgba(0,20,5,.03)';bgCtx.fillRect(0,y,w,1);}}
+  if(bgMode>=6){const t=bgT*10;for(let i=0;i<6;i++){const sx=Math.sin(t+i*1.05)*w*.44+w/2,sy=Math.cos(t+i*.9)*h*.34+h/2;bgCtx.beginPath();bgCtx.moveTo(w/2,h/2);bgCtx.lineTo(sx,sy);bgCtx.strokeStyle=`rgba(0,255,68,${.04+Math.random()*.04})`;bgCtx.lineWidth=.7;bgCtx.stroke();}}
+  if(bgMode>=7){for(let i=0;i<10;i++){const a=bgT*6+i*.628;bgCtx.beginPath();bgCtx.arc(Math.sin(a)*w*.42+w/2,Math.cos(a*1.2)*h*.36+h/2,1.5+Math.random()*2.5,0,Math.PI*2);bgCtx.fillStyle=`rgba(0,255,68,${.4+Math.random()*.55})`;bgCtx.fill();}}
 }
 
-function drawHeavenBgSimple(){
-  // heaven bg handled by CSS overlay + heaven canvas
-  bgCtx.clearRect(0,0,bgCanvas.width,bgCanvas.height);
-}
+// ── THEME CANVAS IMPLEMENTATIONS ─────────────────────────────────
+// HEAVEN
+let hvPts=[],hvT=0;
+function initHV(c){hvPts=[];for(let i=0;i<140;i++)hvPts.push({x:Math.random()*c.width,y:Math.random()*c.height,r:.5+Math.random()*3,s:.12+Math.random()*.7,a:.03+Math.random()*.15,d:(Math.random()-.5)*.35,tw:Math.random()*Math.PI*2,tws:.01+Math.random()*.04,g:Math.random()>.55});}
+function drawHV(c){const ctx=c.getContext('2d');function f(){if(!activeDrawFns.heaven)return;ctx.clearRect(0,0,c.width,c.height);hvT+=.007;hvPts.forEach(p=>{p.y-=p.s;p.x+=p.d;p.tw+=p.tws;if(p.y<-4){p.y=c.height+4;p.x=Math.random()*c.width;}const tw=.5+.5*Math.sin(p.tw),a=p.a*tw;if(p.g){const gr=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r*2.2);gr.addColorStop(0,`rgba(255,215,0,${a*2.5})`);gr.addColorStop(1,'rgba(255,215,0,0)');ctx.beginPath();ctx.arc(p.x,p.y,p.r*2.2,0,Math.PI*2);ctx.fillStyle=gr;ctx.fill();}else{ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=`rgba(255,255,255,${a})`;ctx.fill();}});const cx=c.width/2;for(let i=0;i<6;i++){const x=cx+(i-2.5)*c.width*.13,p2=.5+.5*Math.sin(hvT*1.8+i),gr=ctx.createLinearGradient(x,0,x,c.height*.6);gr.addColorStop(0,`rgba(255,255,255,${.05*p2})`);gr.addColorStop(1,'rgba(255,255,255,0)');ctx.beginPath();ctx.moveTo(x-22,0);ctx.lineTo(x+22,0);ctx.lineTo(x+80,c.height*.6);ctx.lineTo(x-80,c.height*.6);ctx.closePath();ctx.fillStyle=gr;ctx.fill();}requestAnimationFrame(f);}f();}
 
-// ── HEAVEN CANVAS ────────────────────────────────────────
-const hCanvas=$('heaven-canvas'), hCtx=hCanvas.getContext('2d');
-let hParts=[], hTime=0, heavenRunning=false;
+// WASTELAND
+let wsPts=[],wsT=0;
+function initWS(c){wsPts=[];for(let i=0;i<65;i++)wsPts.push({x:Math.random()*c.width,y:Math.random()*c.height,r:.5+Math.random()*3,vx:(Math.random()-.5)*1.2,vy:-.08-Math.random()*.28,a:.04+Math.random()*.14,life:Math.random(),dec:.002+Math.random()*.005});}
+function drawWS(c){const ctx=c.getContext('2d');function f(){if(!activeDrawFns.wasteland)return;ctx.clearRect(0,0,c.width,c.height);wsT+=.006;wsPts.forEach((p,i)=>{p.x+=p.vx;p.y+=p.vy;p.vx+=(Math.random()-.5)*.08;p.life-=p.dec;if(p.life<=0){wsPts[i]={x:Math.random()*c.width,y:c.height+8,r:.5+Math.random()*3,vx:(Math.random()-.5)*1.2,vy:-.08-Math.random()*.28,a:.04+Math.random()*.14,life:1,dec:.002+Math.random()*.005};return;}ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=`rgba(${Math.random()>.5?'139,105,20':'180,140,80'},${p.a*p.life})`;ctx.fill();});ctx.strokeStyle='rgba(74,50,16,.05)';ctx.lineWidth=.5;for(let i=0;i<4;i++){ctx.beginPath();const sx=Math.sin(wsT+i*1.57)*c.width*.38+c.width/2;ctx.moveTo(sx,0);ctx.lineTo(sx+(Math.random()-.5)*60,c.height);ctx.stroke();}requestAnimationFrame(f);}f();}
 
-function startHeavenCanvas(){
-  heavenRunning=true;
-  hCanvas.width=window.innerWidth; hCanvas.height=window.innerHeight;
-  hParts=[];
-  for(let i=0;i<120;i++) hParts.push({
-    x:Math.random()*hCanvas.width, y:Math.random()*hCanvas.height,
-    r:.8+Math.random()*3.5, speed:.2+Math.random()*.8,
-    alpha:.04+Math.random()*.18, drift:(Math.random()-.5)*.4,
-    twinkle:Math.random()*Math.PI*2, twinkleSpeed:.01+Math.random()*.04,
-    isGold:Math.random()>.6,
-  });
-  window.addEventListener('resize',()=>{hCanvas.width=window.innerWidth;hCanvas.height=window.innerHeight;});
-  drawHeaven();
-}
+// INFERNO
+let ifPts=[],ifT=0;
+function initIF(c){ifPts=[];for(let i=0;i<110;i++)ifPts.push({x:Math.random()*c.width,y:c.height+Math.random()*180,r:.5+Math.random()*4,s:.25+Math.random()*1.5,a:.05+Math.random()*.2,d:(Math.random()-.5)*.75,life:Math.random()});}
+function drawIF(c){const ctx=c.getContext('2d');function f(){if(!activeDrawFns.inferno)return;ctx.clearRect(0,0,c.width,c.height);ifT+=.012;const gr=ctx.createLinearGradient(0,c.height*.65,0,c.height);gr.addColorStop(0,'rgba(180,40,0,0)');gr.addColorStop(1,`rgba(160,15,0,${.14+.06*Math.sin(ifT*3)})`);ctx.fillStyle=gr;ctx.fillRect(0,c.height*.65,c.width,c.height*.35);ifPts.forEach((p,i)=>{p.y-=p.s;p.x+=p.d+(Math.random()-.5)*.25;p.life-=.007;if(p.y<-10||p.life<=0){ifPts[i]={x:Math.random()*c.width,y:c.height+8,r:.5+Math.random()*4,s:.25+Math.random()*1.5,a:.05+Math.random()*.2,d:(Math.random()-.5)*.75,life:1};return;}const heat=1-p.y/c.height,r2=Math.round(200+55*heat),g2=Math.round(p.y<c.height*.5?25:70);ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=`rgba(${r2},${g2},0,${p.a*p.life})`;ctx.fill();});if(Math.random()>.94){const lx=Math.random()*c.width;ctx.beginPath();ctx.moveTo(lx,0);for(let s=0;s<8;s++){ctx.lineTo(lx+(Math.random()-.5)*55,s*c.height/8);}ctx.strokeStyle=`rgba(255,80,0,${.25+Math.random()*.35})`;ctx.lineWidth=1.4;ctx.stroke();}requestAnimationFrame(f);}f();}
 
-function drawHeaven(){
-  if(!heavenRunning) return;
-  hCtx.clearRect(0,0,hCanvas.width,hCanvas.height); hTime+=.008;
-  hParts.forEach(p=>{
-    p.y-=p.speed; p.x+=p.drift; p.twinkle+=p.twinkleSpeed;
-    if(p.y<-4){p.y=hCanvas.height+4;p.x=Math.random()*hCanvas.width;}
-    if(p.x<-4||p.x>hCanvas.width+4) p.x=Math.random()*hCanvas.width;
-    const tw=.5+.5*Math.sin(p.twinkle);
-    const a=p.alpha*tw;
-    if(p.isGold){
-      const gr=hCtx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r*2);
-      gr.addColorStop(0,`rgba(255,215,0,${a*2})`);
-      gr.addColorStop(1,'rgba(255,215,0,0)');
-      hCtx.beginPath(); hCtx.arc(p.x,p.y,p.r*2,0,Math.PI*2);
-      hCtx.fillStyle=gr; hCtx.fill();
-    } else {
-      hCtx.beginPath(); hCtx.arc(p.x,p.y,p.r,0,Math.PI*2);
-      hCtx.fillStyle=`rgba(255,255,255,${a})`; hCtx.fill();
-    }
-  });
-  // light rays from top
-  const cx=hCanvas.width/2;
-  for(let i=0;i<5;i++){
-    const x=cx+(i-2)*hCanvas.width*.14, pulse=.5+.5*Math.sin(hTime*2+i);
-    const gr=hCtx.createLinearGradient(x,0,x+30,hCanvas.height*.6);
-    gr.addColorStop(0,`rgba(255,255,255,${.04*pulse})`);
-    gr.addColorStop(1,'rgba(255,255,255,0)');
-    hCtx.beginPath(); hCtx.moveTo(x-20,0); hCtx.lineTo(x+20,0);
-    hCtx.lineTo(x+80,hCanvas.height*.6); hCtx.lineTo(x-80,hCanvas.height*.6); hCtx.closePath();
-    hCtx.fillStyle=gr; hCtx.fill();
-  }
-  requestAnimationFrame(drawHeaven);
-}
+// VOID
+let vcPts=[],vcT=0;
+function initVC(c){vcPts=[];for(let i=0;i<100;i++)vcPts.push({x:Math.random()*c.width,y:Math.random()*c.height,r:.3+Math.random()*2,s:.04+Math.random()*.2,a:.04+Math.random()*.14,tw:Math.random()*Math.PI*2,tws:.008+Math.random()*.03});}
+function drawVC(c){const ctx=c.getContext('2d');function f(){if(!activeDrawFns.void)return;ctx.clearRect(0,0,c.width,c.height);vcT+=.008;const cx=c.width/2,cy=c.height/2,pulse=.5+.5*Math.sin(vcT*2.5);const gr=ctx.createRadialGradient(cx,cy,0,cx,cy,Math.max(c.width,c.height)*.65);gr.addColorStop(0,`rgba(100,100,255,${.06*pulse})`);gr.addColorStop(.5,`rgba(60,60,200,${.025*pulse})`);gr.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=gr;ctx.fillRect(0,0,c.width,c.height);vcPts.forEach(p=>{p.tw+=p.tws;const tw=.5+.5*Math.sin(p.tw);p.y-=p.s;if(p.y<-4){p.y=c.height+4;p.x=Math.random()*c.width;}ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=`rgba(120,120,255,${p.a*tw})`;ctx.fill();});requestAnimationFrame(f);}f();}
 
-// ── END CANVAS ───────────────────────────────────────────
+// CRYSTAL
+let crPts=[],crT=0;
+function initCR(c){crPts=[];for(let i=0;i<90;i++)crPts.push({x:Math.random()*c.width,y:Math.random()*c.height,r:.4+Math.random()*2.5,s:.1+Math.random()*.5,a:.05+Math.random()*.18,tw:Math.random()*Math.PI*2,tws:.012+Math.random()*.035});}
+function drawCR(c){const ctx=c.getContext('2d');function f(){if(!activeDrawFns.crystal)return;ctx.clearRect(0,0,c.width,c.height);crT+=.01;crPts.forEach(p=>{p.y-=p.s;p.tw+=p.tws;if(p.y<-4){p.y=c.height+4;p.x=Math.random()*c.width;}const tw=.5+.5*Math.sin(p.tw);const gr=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r*2);gr.addColorStop(0,`rgba(0,255,238,${p.a*tw*2})`);gr.addColorStop(1,'rgba(0,200,180,0)');ctx.beginPath();ctx.arc(p.x,p.y,p.r*2,0,Math.PI*2);ctx.fillStyle=gr;ctx.fill();});const cx=c.width/2,cy=c.height/2;for(let i=0;i<4;i++){const ang=crT+i*Math.PI*.5,x=Math.cos(ang)*c.width*.3+cx,y=Math.sin(ang)*c.height*.25+cy,p3=.5+.5*Math.sin(crT*3+i);const gr2=ctx.createRadialGradient(x,y,0,x,y,60);gr2.addColorStop(0,`rgba(0,255,220,${.08*p3})`);gr2.addColorStop(1,'rgba(0,255,220,0)');ctx.beginPath();ctx.arc(x,y,60,0,Math.PI*2);ctx.fillStyle=gr2;ctx.fill();}requestAnimationFrame(f);}f();}
+
+// AURORA
+let arPts=[],arT=0;
+function initAR(c){arPts=[];for(let i=0;i<80;i++)arPts.push({x:Math.random()*c.width,y:Math.random()*c.height,r:.4+Math.random()*2,s:.08+Math.random()*.35,a:.04+Math.random()*.14,hue:Math.random()*60+270,tw:Math.random()*Math.PI*2,tws:.01+Math.random()*.03});}
+function drawAR(c){const ctx=c.getContext('2d');function f(){if(!activeDrawFns.aurora)return;ctx.clearRect(0,0,c.width,c.height);arT+=.008;arPts.forEach(p=>{p.y-=p.s;p.tw+=p.tws;if(p.y<-4){p.y=c.height+4;p.x=Math.random()*c.width;}const tw=.5+.5*Math.sin(p.tw);ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=`hsla(${p.hue+Math.sin(arT+p.tw)*30},80%,70%,${p.a*tw})`;ctx.fill();});for(let i=0;i<3;i++){const y=c.height*(0.2+i*.2),w2=c.width,p4=.5+.5*Math.sin(arT*1.5+i);const gr=ctx.createLinearGradient(0,y-30,0,y+30);gr.addColorStop(0,'rgba(0,0,0,0)');gr.addColorStop(.5,`hsla(${280+i*40+Math.sin(arT)*20},70%,60%,${.06*p4})`);gr.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=gr;ctx.fillRect(0,y-30,w2,60);}requestAnimationFrame(f);}f();}
+
+// SOLAR
+let slPts=[],slT=0;
+function initSL(c){slPts=[];for(let i=0;i<90;i++)slPts.push({x:Math.random()*c.width,y:Math.random()*c.height,r:.4+Math.random()*2.5,s:.1+Math.random()*.5,a:.04+Math.random()*.16,tw:Math.random()*Math.PI*2,tws:.01+Math.random()*.04});}
+function drawSL(c){const ctx=c.getContext('2d');function f(){if(!activeDrawFns.solar)return;ctx.clearRect(0,0,c.width,c.height);slT+=.01;const cx=c.width/2,cy=c.height/2;const gr=ctx.createRadialGradient(cx,cy*.5,0,cx,cy*.5,Math.max(c.width,c.height)*.6);gr.addColorStop(0,`rgba(255,200,50,${.07+.03*Math.sin(slT*2)})`);gr.addColorStop(.5,`rgba(255,120,0,${.03+.01*Math.sin(slT*2)})`);gr.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=gr;ctx.fillRect(0,0,c.width,c.height);slPts.forEach(p=>{p.y-=p.s;p.tw+=p.tws;if(p.y<-4){p.y=c.height+4;p.x=Math.random()*c.width;}const tw=.5+.5*Math.sin(p.tw);const gr2=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r*2);gr2.addColorStop(0,`rgba(255,${Math.round(180+tw*75)},50,${p.a*tw*2})`);gr2.addColorStop(1,'rgba(255,150,0,0)');ctx.beginPath();ctx.arc(p.x,p.y,p.r*2,0,Math.PI*2);ctx.fillStyle=gr2;ctx.fill();});requestAnimationFrame(f);}f();}
+
+// DEEP
+let dpPts=[],dpT=0;
+function initDP(c){dpPts=[];for(let i=0;i<100;i++)dpPts.push({x:Math.random()*c.width,y:Math.random()*c.height,r:.3+Math.random()*2,s:.05+Math.random()*.22,a:.04+Math.random()*.14,tw:Math.random()*Math.PI*2,tws:.008+Math.random()*.025});}
+function drawDP(c){const ctx=c.getContext('2d');function f(){if(!activeDrawFns.deep)return;ctx.clearRect(0,0,c.width,c.height);dpT+=.007;const cx=c.width/2,cy=c.height/2;const gr=ctx.createRadialGradient(cx,cy,0,cx,cy,Math.max(c.width,c.height)*.7);gr.addColorStop(0,`rgba(30,80,200,${.04+.02*Math.sin(dpT)})`);gr.addColorStop(1,'rgba(0,0,0,0)');ctx.fillStyle=gr;ctx.fillRect(0,0,c.width,c.height);dpPts.forEach(p=>{p.y-=p.s;p.tw+=p.tws;if(p.y<-4){p.y=c.height+4;p.x=Math.random()*c.width;}const tw=.5+.5*Math.sin(p.tw);ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=`rgba(50,${Math.round(80+tw*100)},255,${p.a*tw})`;ctx.fill();});for(let i=0;i<3;i++){const ang=dpT*.5+i*2.1,x=Math.cos(ang)*c.width*.35+cx,y=Math.sin(ang)*c.height*.28+cy;ctx.beginPath();ctx.arc(x,y,3+Math.random()*3,0,Math.PI*2);ctx.fillStyle=`rgba(80,140,255,${.3+Math.random()*.5})`;ctx.fill();}requestAnimationFrame(f);}f();}
+
+// ── END CANVAS ───────────────────────────────────────────────────
 function startEndCanvas(){
-  const c=$('end-canvas'), ctx=c.getContext('2d');
-  c.width=window.innerWidth; c.height=window.innerHeight;
-  const parts=[];
-  for(let i=0;i<350;i++){
-    const a=Math.random()*Math.PI*2, s=.8+Math.random()*7;
-    const isHv=G.heavenMode;
-    parts.push({x:c.width/2,y:c.height/2,vx:Math.cos(a)*s,vy:Math.sin(a)*s,r:1+Math.random()*4.5,alpha:.9,decay:.005+Math.random()*.012,col:isHv?(Math.random()>.5?'255,215,0':'255,255,255'):(Math.random()>.5?'46,204,56':'0,255,68')});
-  }
-  function draw(){
-    ctx.clearRect(0,0,c.width,c.height);
-    parts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.025;p.alpha-=p.decay;if(p.alpha<=0)return;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=`rgba(${p.col},${p.alpha})`;ctx.fill();});
-    if(parts.some(p=>p.alpha>0)) requestAnimationFrame(draw);
-  }
-  requestAnimationFrame(draw);
+  const c=$('end-canvas'),ctx=c.getContext('2d');c.width=window.innerWidth;c.height=window.innerHeight;
+  const wCols={green:['46,204,56','0,255,68'],heaven:['255,215,0','255,255,255'],wasteland:['139,105,20','200,168,118'],inferno:['255,68,0','200,30,0'],void:['100,100,255','60,60,200'],crystal:['0,255,238','0,200,180'],aurora:['255,128,255','180,80,220'],solar:['255,200,50','255,120,0'],deep:['50,120,255','20,70,200']};
+  const cc=wCols[G.world]||wCols.green;
+  const pts=[];for(let i=0;i<400;i++){const a=Math.random()*Math.PI*2,s=.8+Math.random()*7;pts.push({x:c.width/2,y:c.height/2,vx:Math.cos(a)*s,vy:Math.sin(a)*s,r:1+Math.random()*4.5,al:.9,dec:.005+Math.random()*.012,col:cc[Math.random()>.5?0:1]});}
+  function d(){ctx.clearRect(0,0,c.width,c.height);pts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.022;p.al-=p.dec;if(p.al<=0)return;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=`rgba(${p.col},${p.al})`;ctx.fill();});if(pts.some(p=>p.al>0))requestAnimationFrame(d);}
+  requestAnimationFrame(d);
 }
 
-// ── TOAST ────────────────────────────────────────────────
+// ── TOAST ────────────────────────────────────────────────────────
 let toastTO;
-function showToast(msg){
-  $toast.textContent=msg; $toast.classList.add('show');
-  clearTimeout(toastTO); toastTO=setTimeout(()=>$toast.classList.remove('show'),2800);
+function showToast(m){$('toast').textContent=m;$('toast').classList.add('show');clearTimeout(toastTO);toastTO=setTimeout(()=>$('toast').classList.remove('show'),2800);}
+
+// ── NUMBER FORMAT ────────────────────────────────────────────────
+function fe(v){
+  v=Math.abs(v);
+  if(v>=1e99)return '>10⁹⁹';
+  if(v>=1e30)return (v/1e30).toFixed(2)+'No';
+  if(v>=1e27)return (v/1e27).toFixed(2)+'Oc';
+  if(v>=1e24)return (v/1e24).toFixed(2)+'Sp';
+  if(v>=1e21)return (v/1e21).toFixed(2)+'Sx';
+  if(v>=1e18)return (v/1e18).toFixed(2)+'Qi';
+  if(v>=1e15)return (v/1e15).toFixed(2)+'Q';
+  if(v>=1e12)return (v/1e12).toFixed(2)+'T';
+  if(v>=1e9) return (v/1e9).toFixed(2)+'B';
+  if(v>=1e6) return (v/1e6).toFixed(2)+'M';
+  if(v>=1e3) return (v/1e3).toFixed(2)+'k';
+  return Math.floor(v).toString();
 }
 
-// ── FORMAT ───────────────────────────────────────────────
-function fmtE(v){
-  v=Math.abs(v);
-  if(v>=1e21) return (v/1e21).toFixed(2)+'Sx';
-  if(v>=1e18) return (v/1e18).toFixed(2)+'Qi';
-  if(v>=1e15) return (v/1e15).toFixed(2)+'Q';
-  if(v>=1e12) return (v/1e12).toFixed(2)+'T';
-  if(v>=1e9)  return (v/1e9).toFixed(2)+'B';
-  if(v>=1e6)  return (v/1e6).toFixed(2)+'M';
-  if(v>=1e3)  return (v/1e3).toFixed(2)+'k';
-  return Math.floor(v).toString();
+// ── INIT ─────────────────────────────────────────────────────────
+function closeUpdate(){
+  $('update-popup').style.display='none';
+  $('loading').style.display='flex';
+  const lb2=$('lb'),lp=$('lpct'),DUR=13000,start=Date.now();
+  function tl(){const p=Math.min((Date.now()-start)/DUR,1),v=p<.5?2*p*p:-1+(4-2*p)*p;lb2.style.width=Math.round(v*100)+'%';lp.textContent=Math.round(v*100)+'%';p<1?requestAnimationFrame(tl):enterGame();}
+  requestAnimationFrame(tl);
+}
+function enterGame(){
+  $('loading').classList.add('fo');setTimeout(()=>$('loading').style.display='none',1300);
+  $('game').classList.add('vis');
+  if(G.pCount>0)$('prestige-b').style.display='block';
+  setOrb(orbSz);
+  $('orb-wrap').addEventListener('pointerdown',handleClick);
+  buildShop();buildMsRow();startBgCanvas();
+  setInterval(gameTick,100);
+  requestAnimationFrame(renderLoop);
 }
 </script>
 </body>
